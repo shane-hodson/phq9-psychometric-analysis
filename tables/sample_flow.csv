@@ -1,0 +1,9 @@
+stage,n
+All records in P_DEMO,15560
+Adults aged 18 or older in P_DEMO,9693
+All records in P_DPQ,8965
+P_DPQ records linked to P_DEMO,8965
+Linked records aged 18 or older,8965
+Adults with all nine PHQ-9 items valid,8276
+Adults with valid DPQ100,5535
+Adults with complete PHQ-9 and valid DPQ100,5517

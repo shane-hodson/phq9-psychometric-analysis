@@ -1,0 +1,9 @@
+phq_response_pattern,dpq100_status,n,row_percent
+All nine PHQ-9 items equal 0,DPQ100 system missing,2754,100
+At least one PHQ-9 item above 0,DPQ100 don't know,3,0.05432814197754437
+At least one PHQ-9 item above 0,DPQ100 refused,1,0.018109380659181457
+At least one PHQ-9 item above 0,DPQ100 system missing,1,0.018109380659181457
+At least one PHQ-9 item above 0,Valid DPQ100 response,5517,99.9094530967041
+Incomplete PHQ-9,DPQ100 don't know,1,0.14513788098693758
+Incomplete PHQ-9,DPQ100 system missing,670,97.24238026124819
+Incomplete PHQ-9,Valid DPQ100 response,18,2.6124818577648767

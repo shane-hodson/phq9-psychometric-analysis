@@ -1,0 +1,11 @@
+variable,nhanes_label,item_number,content,role,valid_codes,non_substantive_codes,included_in_phq9_total
+DPQ010,Have little interest in doing things,1,Little interest or pleasure,PHQ-9 symptom item,"0, 1, 2, 3",7 = Refused; 9 = Don't know; blank = system missing,Yes
+DPQ020,"Feeling down, depressed, or hopeless",2,Depressed mood or hopelessness,PHQ-9 symptom item,"0, 1, 2, 3",7 = Refused; 9 = Don't know; blank = system missing,Yes
+DPQ030,Trouble sleeping or sleeping too much,3,Sleep disturbance,PHQ-9 symptom item,"0, 1, 2, 3",7 = Refused; 9 = Don't know; blank = system missing,Yes
+DPQ040,Feeling tired or having little energy,4,Tiredness or low energy,PHQ-9 symptom item,"0, 1, 2, 3",7 = Refused; 9 = Don't know; blank = system missing,Yes
+DPQ050,Poor appetite or overeating,5,Appetite disturbance,PHQ-9 symptom item,"0, 1, 2, 3",7 = Refused; 9 = Don't know; blank = system missing,Yes
+DPQ060,Feeling bad about yourself,6,Negative self-evaluation,PHQ-9 symptom item,"0, 1, 2, 3",7 = Refused; 9 = Don't know; blank = system missing,Yes
+DPQ070,Trouble concentrating on things,7,Concentration difficulties,PHQ-9 symptom item,"0, 1, 2, 3",7 = Refused; 9 = Don't know; blank = system missing,Yes
+DPQ080,Moving or speaking slowly or too fast,8,Psychomotor slowing or agitation,PHQ-9 symptom item,"0, 1, 2, 3",7 = Refused; 9 = Don't know; blank = system missing,Yes
+DPQ090,Thoughts you would be better off dead,9,Thoughts of death or self-harm,PHQ-9 symptom item,"0, 1, 2, 3",7 = Refused; 9 = Don't know; blank = system missing,Yes
+DPQ100,Difficulty these problems have caused,NA,Functional difficulty,External functional-difficulty item,"0, 1, 2, 3",7 = Refused; 9 = Don't know; blank = system missing,No

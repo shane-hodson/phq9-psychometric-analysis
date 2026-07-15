@@ -1,0 +1,4 @@
+variable,description,total_n,missing_n,valid_n,distinct_values
+WTMECPRP,Combined 2017-March 2020 MEC examination weight,8965,0,8965,8366
+SDMVPSU,Masked variance primary sampling unit,8965,0,8965,3
+SDMVSTRA,Masked variance stratum,8965,0,8965,24

@@ -1,0 +1,11 @@
+variable,minimum,maximum,missing_n,unexpected_after_cleaning
+DPQ010,0,3,667,0
+DPQ020,0,3,666,0
+DPQ030,0,3,667,0
+DPQ040,0,3,668,0
+DPQ050,0,3,666,0
+DPQ060,0,3,670,0
+DPQ070,0,3,666,0
+DPQ080,0,3,668,0
+DPQ090,0,3,669,0
+DPQ100,0,3,3430,0

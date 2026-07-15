@@ -1,0 +1,9 @@
+check,n
+Rows in P_DPQ,8965
+Unique SEQN in P_DPQ,8965
+Duplicated SEQN in P_DPQ,0
+Rows in P_DEMO,15560
+Unique SEQN in P_DEMO,15560
+Duplicated SEQN in P_DEMO,0
+P_DPQ records not found in P_DEMO,0
+P_DEMO adults not found in P_DPQ,728

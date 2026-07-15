@@ -47,3 +47,27 @@ po/*~
 
 # RStudio Connect folder
 rsconnect/
+# Raw NHANES downloads
+data/raw/*.xpt
+data/raw/*.csv
+
+# Processed datasets
+data/processed/*.rds
+data/processed/*.csv
+
+# Keep empty data folders in Git
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+
+# Quarto temporary files
+.quarto/
+report/report_files/
+
+# Operating-system files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.bak
+*~

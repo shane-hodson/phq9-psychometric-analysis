@@ -1,0 +1,181 @@
+---
+title: "Psychometric Evaluation of the PHQ-9 in U.S. Adults Using NHANES 2017–March 2020"
+subtitle: "Reliability, Dimensionality, Functional Difficulty, and Clinical Interpretation"
+author: "Shane Hodson"
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    code-fold: true
+    embed-resources: true
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+```{r}
+library(readr)
+library(here)
+library(knitr)
+
+display_audit_table <- function(file_name, caption) {
+
+  file_path <- here("tables", file_name)
+
+  if (file.exists(file_path)) {
+
+    read_csv(
+      file_path,
+      show_col_types = FALSE
+    ) |>
+      kable(
+        caption = caption,
+        digits = 2
+      )
+
+  } else {
+
+    cat(
+      paste0(
+        "**Output not yet generated:** `",
+        file_name,
+        "`"
+      )
+    )
+  }
+}
+```
+
+# Project status
+
+This report documents the repository setup and initial NHANES data-audit stage.
+
+Reliability analysis, factor analysis and substantive clinical interpretation have not yet begun.
+
+# Dataset
+
+The project uses:
+
+- `P_DPQ.xpt`: Mental Health—Depression Screener
+- `P_DEMO.xpt`: Demographic and survey-design variables
+
+The two files are linked using the NHANES respondent identifier `SEQN`.
+
+# Source-file audit
+
+```{r}
+display_audit_table(
+  "data_file_audit.csv",
+  "Initial NHANES source-file audit"
+)
+```
+
+# SEQN linkage audit
+
+```{r}
+display_audit_table(
+  "seqn_linkage_audit.csv",
+  "Linkage audit using SEQN"
+)
+```
+
+All depression-screener records were successfully matched to the demographic file.
+
+Adults appearing in the demographic file but not in the depression-screener file are retained in the sample-flow documentation but are not added artificially to the depression analysis sample.
+
+# PHQ-9 variable dictionary
+
+```{r}
+display_audit_table(
+  "phq9_variable_dictionary.csv",
+  "PHQ-9 and functional-difficulty variable dictionary"
+)
+```
+
+# Response-code audit
+
+```{r}
+display_audit_table(
+  "response_code_audit.csv",
+  "Observed questionnaire response codes"
+)
+```
+
+The audit distinguishes valid responses from refusal, “don’t know” and system-missing values. No unexpected response codes were identified.
+
+# Missingness audit
+
+```{r}
+display_audit_table(
+  "missingness_audit.csv",
+  "Item-level missingness audit"
+)
+```
+
+# DPQ100 pattern audit
+
+```{r}
+display_audit_table(
+  "dpq100_skip_audit.csv",
+  "DPQ100 status by PHQ-9 response pattern"
+)
+```
+
+All participants with valid zero responses to all nine PHQ-9 items had a system-missing `DPQ100` response.
+
+Among participants endorsing at least one PHQ-9 symptom, nearly all had a valid `DPQ100` response.
+
+This pattern is consistent with structural questionnaire routing rather than ordinary item non-response. No recoding decision is implemented at this stage.
+
+# Initial sample flow
+
+```{r}
+display_audit_table(
+  "sample_flow.csv",
+  "Initial analytic sample flow"
+)
+```
+
+# Survey-design variable audit
+
+```{r}
+display_audit_table(
+  "survey_design_audit.csv",
+  "NHANES survey-design variable audit"
+)
+```
+
+The combined-cycle examination weight, masked variance stratum and masked variance primary sampling unit variables were present for all linked depression-screener records.
+
+# Cleaned questionnaire-code check
+
+```{r}
+display_audit_table(
+  "clean_code_check.csv",
+  "Questionnaire values after recoding non-substantive responses"
+)
+```
+
+Refusal, “don't know” and system-missing responses were recoded as `NA`.
+
+After cleaning, each questionnaire variable contained only valid values from 0 to 3 or missing values. No unexpected codes remained.
+
+Structurally missing `DPQ100` responses have not been recoded as a functional-difficulty category.
+
+# Data-audit decisions
+
+The current audit establishes that:
+
+- `P_DPQ` contains 8,965 unique respondents;
+- all `P_DPQ` respondents link successfully to `P_DEMO`;
+- 8,276 respondents have valid responses to all nine PHQ-9 items;
+- 5,517 respondents have both a complete PHQ-9 and a valid `DPQ100` response;
+- non-substantive values must be recoded as missing before later analysis;
+- `DPQ100` system missingness is strongly associated with reporting zero on all nine symptom items;
+- all required survey-design variables are available.
+
+# Scope boundary
+
+No reliability coefficients, polychoric correlations, factor models or clinical conclusions are reported at this stage.
