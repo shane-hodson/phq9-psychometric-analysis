@@ -4,37 +4,74 @@
 
 ## Overview
 
-This repository contains a reproducible psychometric evaluation of the Patient Health Questionnaire-9 using the National Health and Nutrition Examination Survey 2017–March 2020 pre-pandemic release.
+This repository documents a reproducible psychometric analysis of the Patient Health Questionnaire-9 using the National Health and Nutrition Examination Survey 2017–March 2020 pre-pandemic release.
 
-The project examines the PHQ-9 as a self-reported indicator of recent depressive symptom severity. It does not treat PHQ-9 scores as psychiatric diagnoses.
+The project examines the PHQ-9 as a self-reported measure of recent depressive symptom severity. PHQ-9 scores are not treated as psychiatric diagnoses.
+
+The analysis plan is documented in [`ANALYSIS_PLAN.md`](ANALYSIS_PLAN.md).
 
 ## Current project stage
 
-**Stage 1: Repository setup and data audit**
+**Stage 2A: weighted descriptive analysis and sample reporting**
 
-Current tasks include:
+Stage 1 has been completed. This included:
 
-- downloading the depression and demographic files;
-- inspecting file structure and response codes;
+- downloading and inspecting the depression and demographic files;
 - verifying linkage using `SEQN`;
-- documenting missingness;
-- auditing the `DPQ100` response and skip pattern;
-- producing the initial sample-flow and missingness outputs.
+- documenting questionnaire response codes and missingness;
+- creating the PHQ-9 variable dictionary;
+- auditing the `DPQ100` response pattern;
+- defining the analysis-specific samples;
+- checking the NHANES survey-design variables;
+- producing the initial sample-flow tables.
 
-Reliability analysis, factor analysis and clinical interpretation have not yet begun.
+Stage 2A will produce:
+
+- the NHANES survey-design object;
+- weighted PHQ-9 item-response proportions;
+- weighted PHQ-9 total-score descriptives;
+- weighted symptom-severity band estimates;
+- weighted `DPQ100` descriptives among routed respondents;
+- an extended functional-difficulty table that includes structural skips as a separate category;
+- exported tables and figures;
+- an updated Quarto report.
+
+Reliability, omega, polychoric correlations, factor analysis and functional-difficulty modelling have not yet begun.
 
 ## Dataset
 
-The project uses the combined NHANES 2017–March 2020 pre-pandemic release.
+The project uses the combined **NHANES 2017–March 2020 pre-pandemic release**.
 
 Primary files:
 
 - `P_DPQ.xpt`: Mental Health—Depression Screener
-- `P_DEMO.xpt`: Demographic and survey-design variables
+- `P_DEMO.xpt`: demographic and survey-design variables
 
 Participants are linked across files using the respondent identifier `SEQN`.
 
 Raw NHANES files are downloaded programmatically and are not redistributed through this repository.
+
+## Analytic samples
+
+The depression-screener file contains 8,965 adults who were successfully linked to the demographic file.
+
+The primary PHQ-9 descriptive and psychometric sample contains:
+
+- **8,276 participants with valid responses to all nine PHQ-9 items**
+
+The primary functional-difficulty sample contains:
+
+- **5,517 participants with complete PHQ-9 data**
+- at least one endorsed PHQ-9 symptom
+- a valid `DPQ100` response
+
+A further 2,754 participants reported zero on all nine PHQ-9 items and had `DPQ100` recorded as system missing. This pattern is consistent with structural questionnaire routing among participants reporting no PHQ-9 symptoms.
+
+These structurally skipped values will not be recoded as “not at all difficult.”
+
+In extended descriptive tables and figures, they will be shown as:
+
+> No PHQ-9 symptoms / DPQ100 structurally skipped
 
 ## Measure
 
@@ -46,11 +83,11 @@ Each item is scored from 0 to 3. A complete total score ranges from 0 to 27.
 
 ## Clinical interpretation
 
-PHQ-9 scores are self-reported symptom-severity indicators, not diagnoses.
+PHQ-9 scores are self-reported indicators of depressive symptom severity, not diagnoses.
 
-The available data do not establish whether a participant meets diagnostic criteria for a depressive disorder or requires treatment.
+The available data do not establish whether a participant meets diagnostic criteria for a depressive disorder, requires treatment or would benefit from a particular intervention.
 
-PHQ-9 item 9 concerns thoughts of death or self-harm. Endorsement is clinically important, but item 9 is not a standalone suicide-risk assessment.
+PHQ-9 item 9 concerns thoughts of death or self-harm. Endorsement is clinically important, but item 9 is not a standalone suicide-risk assessment. It does not establish intent, planning, imminence or overall suicide risk.
 
 ## Planned version 1 analyses
 
@@ -58,14 +95,17 @@ Version 1 will include:
 
 - data and codebook audit;
 - sample-flow reporting;
-- weighted item and total-score descriptives;
+- weighted item-response descriptives;
+- weighted PHQ-9 total-score and severity-band descriptives;
 - ordinal coefficient alpha;
-- McDonald's omega;
+- McDonald’s omega;
 - corrected item-total correlations;
 - polychoric inter-item correlations;
-- one-factor dimensionality analysis;
-- association between PHQ-9 scores and functional difficulty;
-- clinical interpretation and limitations.
+- one-factor confirmatory factor analysis;
+- analysis of PHQ-9 scores in relation to functional difficulty;
+- discussion of interpretation and limitations.
+
+Reliability coefficients will be reported as evidence of internal consistency, not as evidence that the measure is valid or unidimensional.
 
 ## Not included in version 1
 
@@ -73,14 +113,27 @@ Version 1 will not include:
 
 - diagnostic-accuracy analysis;
 - sensitivity or specificity estimates;
-- treatment-need claims;
+- claims about treatment need;
+- claims that PHQ-9 scores establish a depressive disorder;
 - measurement-invariance testing;
 - survey-weighted latent-variable modelling.
 
+## Survey weighting and psychometric analysis
+
+Weighted descriptive and functional-difficulty analyses will use:
+
+- `WTMECPRP`: combined-cycle examination weight
+- `SDMVSTRA`: masked variance stratum
+- `SDMVPSU`: masked variance primary sampling unit
+
+Weighted estimates will describe the U.S. civilian non-institutionalised adult population represented by the combined pre-pandemic release.
+
+Reliability and factor analyses will use the complete-PHQ-9 sample. Unless survey weights are incorporated into a specific psychometric model, these estimates will be described as results for the analytic sample rather than nationally representative latent-variable parameters.
+
 ## Repository structure
 
-- `PROJECT_PROTOCOL.md`: approved project scope and analysis protocol
-- `data/raw/`: downloaded NHANES source files
+- `ANALYSIS_PLAN.md`: project scope, sample definitions and planned analyses
+- `data/raw/`: locally downloaded NHANES source files
 - `data/processed/`: locally generated analysis datasets
 - `scripts/`: numbered R scripts
 - `report/`: Quarto research report
@@ -98,22 +151,43 @@ Version 1 will not include:
 5. `scripts/04_factor_analysis.R`
 6. `scripts/05_figures_tables.R`
 
-Only scripts 00 and 01 are active during the initial data-audit stage.
+Scripts 00 and 01 contain the completed download, linkage, cleaning and data-audit workflow.
+
+Script 02 will contain the Stage 2A weighted descriptive analyses.
+
+Scripts 03–05 have not yet been used for substantive analysis.
 
 ## Project status
+
+### Stage 1: data audit
 
 - [x] Create GitHub repository
 - [x] Create local RStudio project
 - [x] Add repository folders and files
-- [x] Save approved project protocol
-- [x] Create skeleton README
-- [x] Create and render minimal Quarto report
+- [x] Save the analysis plan
+- [x] Create the initial README
+- [x] Create and render the initial Quarto report
 - [x] Download the NHANES source files
 - [x] Verify `SEQN` linkage
 - [x] Create the PHQ-9 variable dictionary
 - [x] Audit response codes and missingness
-- [x] Audit the `DPQ100` pattern
-- [x] Produce initial sample-flow outputs
+- [x] Audit the `DPQ100` response pattern
+- [x] Produce the initial sample-flow outputs
 - [x] Audit survey-design variables
 - [x] Save the cleaned data-audit dataset
-- [ ] Commit and push the completed data-audit stage
+- [x] Commit and push Stage 1
+
+### Stage 2A: weighted descriptives
+
+- [ ] Create the NHANES survey-design object
+- [ ] Calculate weighted PHQ-9 item-response proportions
+- [ ] Describe the weighted PHQ-9 total-score distribution
+- [ ] Calculate the weighted severity-band distribution
+- [ ] Describe `DPQ100` among routed respondents
+- [ ] Create the extended functional-difficulty category
+- [ ] Export descriptive tables and figures
+- [ ] Update the Quarto report
+- [ ] Complete the academic-voice and formatting check
+- [ ] Submit Stage 2A for Command Centre review
+
+Reliability, omega, polychoric correlations, factor analysis and functional-difficulty modelling will not begin until Stage 2A has been reviewed.
