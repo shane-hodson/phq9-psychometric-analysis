@@ -2,6 +2,7 @@
 title: "Psychometric Evaluation of the PHQ-9 in U.S. Adults Using NHANES 2017–March 2020"
 subtitle: "Reliability, Dimensionality, Functional Difficulty, and Clinical Interpretation"
 author: "Shane Hodson"
+date: "15 July 2026"
 format:
   html:
     toc: true
@@ -21,11 +22,11 @@ library(here)
 library(knitr)
 
 display_audit_table <- function(file_name, caption) {
-
+  
   file_path <- here("tables", file_name)
-
+  
   if (file.exists(file_path)) {
-
+    
     read_csv(
       file_path,
       show_col_types = FALSE
@@ -34,9 +35,9 @@ display_audit_table <- function(file_name, caption) {
         caption = caption,
         digits = 2
       )
-
+    
   } else {
-
+    
     cat(
       paste0(
         "**Output not yet generated:** `",
@@ -103,7 +104,7 @@ display_audit_table(
 )
 ```
 
-The audit distinguishes valid responses from refusal, “don’t know” and system-missing values. No unexpected response codes were identified.
+The audit distinguishes valid responses from refusal, "don't know" and system-missing values. No unexpected response codes were identified.
 
 # Missingness audit
 
@@ -158,9 +159,9 @@ display_audit_table(
 )
 ```
 
-Refusal, “don't know” and system-missing responses were recoded as `NA`.
+Refusal, "don't know" and system-missing responses were recoded as `NA`.
 
-After cleaning, each questionnaire variable contained only valid values from 0 to 3 or missing values. No unexpected codes remained.
+After cleaning, each PHQ-9 symptom item contained only valid values from 0 to 3 or missing values. No unexpected codes remained.
 
 Structurally missing `DPQ100` responses have not been recoded as a functional-difficulty category.
 
