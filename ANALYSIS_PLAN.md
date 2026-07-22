@@ -497,7 +497,7 @@ phq9-nhanes-psychometrics/
 - [x] Export descriptive tables and figures.
 - [x] Update the Quarto report.
 - [x] Complete the academic-voice and formatting check.
-- [x] Obtain Command Centre approval.
+- [x] Complete Stage 2A review and validation.
 
 ### Stage 2B: reliability and item analysis
 
@@ -511,6 +511,6 @@ phq9-nhanes-psychometrics/
 - [ ] Export Stage 2B tables and any necessary figures.
 - [ ] Update the Quarto report.
 - [ ] Complete the academic-voice, methodological-language and formatting check.
-- [ ] Submit Stage 2B for Command Centre review.
+- [ ] Complete Stage 2B review and validation.
 
-Stage 2A has been approved. Stage 2B is limited to reliability and item analysis. Factor analysis, confirmatory modelling, measurement invariance, functional-difficulty regression modelling and clinical interpretation will not begin until Stage 2B has been reviewed.
+Stage 2A review and validation are complete. Stage 2B is limited to reliability and item analysis. Factor analysis, confirmatory modelling, measurement invariance, functional-difficulty regression modelling and clinical interpretation will not begin until Stage 2B has been reviewed.

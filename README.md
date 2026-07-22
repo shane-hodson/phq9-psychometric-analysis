@@ -243,7 +243,7 @@ Script 05 contains the approved Stage 2A and Stage 2B figure-export workflow.
 - [x] Export descriptive tables and figures
 - [x] Update the Quarto report
 - [x] Complete the academic-voice and formatting check
-- [x] Obtain Command Centre approval
+- [x] Complete Stage 2A review and validation
 
 ### Stage 2B: reliability and item analysis
 
@@ -257,7 +257,7 @@ Script 05 contains the approved Stage 2A and Stage 2B figure-export workflow.
 - [x] Export Stage 2B tables and figures
 - [x] Update the Quarto report
 - [x] Complete the academic-voice and formatting check
-- [x] Submit Stage 2B for Command Centre review
+- [x] Complete Stage 2B review and validation
 
 ### Stage 3: dimensionality analysis
 
@@ -270,7 +270,7 @@ Script 05 contains the approved Stage 2A and Stage 2B figure-export workflow.
 - [ ] Document convergence, thresholds and residual diagnostics
 - [ ] Export Stage 3 tables and figures
 - [ ] Update the Quarto report
-- [ ] Submit Stage 3 for Command Centre review
+- [ ] Complete Stage 3 review and validation
 
 Stage 3 will not begin until the remaining Stage 2B repository refinements have been completed and verified.
 
