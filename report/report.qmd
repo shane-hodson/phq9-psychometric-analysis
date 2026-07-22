@@ -2,7 +2,7 @@
 title: "Psychometric Evaluation of the PHQ-9 in U.S. Adults Using NHANES 2017–March 2020"
 subtitle: "Reliability, Dimensionality, Functional Difficulty, and Clinical Interpretation"
 author: "Shane Hodson"
-date: "15 July 2026"
+date: "22 July 2026"
 format:
   html:
     toc: true
@@ -10,6 +10,7 @@ format:
     number-sections: true
     code-fold: true
     embed-resources: true
+    fig-cap-location: bottom
 execute:
   echo: false
   warning: false
@@ -17,30 +18,104 @@ execute:
 ---
 
 ```{r}
+library(dplyr)
 library(readr)
 library(here)
 library(knitr)
 
-display_audit_table <- function(file_name, caption) {
-  
+display_audit_table <- function(file_name, caption, digits = 2) {
+
   file_path <- here("tables", file_name)
-  
+
   if (file.exists(file_path)) {
-    
+
     read_csv(
       file_path,
       show_col_types = FALSE
     ) |>
       kable(
         caption = caption,
-        digits = 2
+        digits = digits
       )
-    
+
   } else {
-    
+
     cat(
       paste0(
         "**Output not yet generated:** `",
+        file_name,
+        "`"
+      )
+    )
+  }
+}
+
+read_stage2a_table <- function(file_name) {
+
+  file_path <- here("tables", file_name)
+
+  if (!file.exists(file_path)) {
+    stop(
+      paste0(
+        "Required Stage 2A table not found: ",
+        file_path
+      )
+    )
+  }
+
+  read_csv(
+    file_path,
+    show_col_types = FALSE
+  )
+}
+
+format_percent_ci <- function(
+  estimate,
+  lower,
+  upper,
+  digits = 2
+) {
+
+  paste0(
+    formatC(
+      estimate,
+      format = "f",
+      digits = digits
+    ),
+    "% (",
+    formatC(
+      lower,
+      format = "f",
+      digits = digits
+    ),
+    "–",
+    formatC(
+      upper,
+      format = "f",
+      digits = digits
+    ),
+    "%)"
+  )
+}
+
+display_figure <- function(file_name) {
+
+  figure_path <- here(
+    "figures",
+    file_name
+  )
+
+  if (file.exists(figure_path)) {
+
+    include_graphics(
+      figure_path
+    )
+
+  } else {
+
+    cat(
+      paste0(
+        "**Figure not yet generated:** `",
         file_name,
         "`"
       )
@@ -51,20 +126,36 @@ display_audit_table <- function(file_name, caption) {
 
 # Project status
 
-This report documents the repository setup and initial NHANES data-audit stage.
+This report documents the completed data audit and the Stage 2A weighted descriptive analyses.
 
-Reliability analysis, factor analysis and substantive clinical interpretation have not yet begun.
+Stage 2A includes:
+
+- construction and validation of the NHANES survey-design object;
+- weighted PHQ-9 item-response proportions;
+- weighted PHQ-9 total-score descriptives;
+- weighted symptom-severity band estimates;
+- weighted `DPQ100` descriptives among routed respondents;
+- an extended functional-difficulty distribution that retains structural skips as a separate category;
+- exported descriptive tables and figures.
+
+Reliability, omega, polychoric correlations, factor analysis, functional-difficulty modelling and clinical interpretation have not begun.
 
 # Dataset
 
-The project uses:
+The project uses the combined NHANES 2017–March 2020 pre-pandemic release.
+
+The primary files are:
 
 - `P_DPQ.xpt`: Mental Health—Depression Screener
-- `P_DEMO.xpt`: Demographic and survey-design variables
+- `P_DEMO.xpt`: demographic and survey-design variables
 
-The two files are linked using the NHANES respondent identifier `SEQN`.
+The files are linked using the NHANES respondent identifier `SEQN`.
 
-# Source-file audit
+Raw NHANES files are downloaded programmatically and are not redistributed through the repository.
+
+# Stage 1: Data audit
+
+## Source-file audit
 
 ```{r}
 display_audit_table(
@@ -73,7 +164,7 @@ display_audit_table(
 )
 ```
 
-# SEQN linkage audit
+## SEQN linkage audit
 
 ```{r}
 display_audit_table(
@@ -82,20 +173,42 @@ display_audit_table(
 )
 ```
 
-All depression-screener records were successfully matched to the demographic file.
+All 8,965 depression-screener records were successfully matched to the demographic file.
 
-Adults appearing in the demographic file but not in the depression-screener file are retained in the sample-flow documentation but are not added artificially to the depression analysis sample.
+Adults appearing in the demographic file but not in the depression-screener file are retained in the sample-flow documentation but are not added to the depression analysis sample.
 
-# PHQ-9 variable dictionary
+## PHQ-9 variable dictionary
 
 ```{r}
-display_audit_table(
-  "phq9_variable_dictionary.csv",
-  "PHQ-9 and functional-difficulty variable dictionary"
+phq9_dictionary_table <- read_stage2a_table(
+  "phq9_variable_dictionary.csv"
+) |>
+  transmute(
+    Variable = variable,
+    `Item number` = item_number,
+    `Symptom content` = content,
+    Role = role,
+    `Included in PHQ-9 total` = if_else(
+      variable == "DPQ100",
+      "No",
+      "Yes"
+    )
+  )
+
+kable(
+  phq9_dictionary_table,
+  caption = "PHQ-9 and functional-difficulty variable dictionary",
+  align = c(
+    "l",
+    "r",
+    "l",
+    "l",
+    "l"
+  )
 )
 ```
 
-# Response-code audit
+## Response-code audit
 
 ```{r}
 display_audit_table(
@@ -104,9 +217,11 @@ display_audit_table(
 )
 ```
 
-The audit distinguishes valid responses from refusal, "don't know" and system-missing values. No unexpected response codes were identified.
+The audit distinguishes valid responses from refusal, “don’t know” and system-missing values.
 
-# Missingness audit
+No unexpected questionnaire response codes were identified.
+
+## Missingness audit
 
 ```{r}
 display_audit_table(
@@ -115,7 +230,7 @@ display_audit_table(
 )
 ```
 
-# DPQ100 pattern audit
+## DPQ100 routing audit
 
 ```{r}
 display_audit_table(
@@ -128,9 +243,11 @@ All participants with valid zero responses to all nine PHQ-9 items had a system-
 
 Among participants endorsing at least one PHQ-9 symptom, nearly all had a valid `DPQ100` response.
 
-This pattern is consistent with structural questionnaire routing rather than ordinary item non-response. No recoding decision is implemented at this stage.
+This pattern is consistent with structural questionnaire routing among participants reporting no PHQ-9 symptoms.
 
-# Initial sample flow
+Structurally skipped `DPQ100` responses are not recoded as “not difficult at all.”
+
+## Initial sample flow
 
 ```{r}
 display_audit_table(
@@ -139,7 +256,7 @@ display_audit_table(
 )
 ```
 
-# Survey-design variable audit
+## Survey-design variable audit
 
 ```{r}
 display_audit_table(
@@ -148,9 +265,9 @@ display_audit_table(
 )
 ```
 
-The combined-cycle examination weight, masked variance stratum and masked variance primary sampling unit variables were present for all linked depression-screener records.
+The combined-cycle examination weight, masked variance stratum and masked variance primary sampling unit variables were present for all 8,965 linked depression-screener records.
 
-# Cleaned questionnaire-code check
+## Cleaned questionnaire-code check
 
 ```{r}
 display_audit_table(
@@ -159,24 +276,407 @@ display_audit_table(
 )
 ```
 
-Refusal, "don't know" and system-missing responses were recoded as `NA`.
+Refusal, “don’t know” and system-missing responses were treated as missing values.
 
-After cleaning, each PHQ-9 symptom item contained only valid values from 0 to 3 or missing values. No unexpected codes remained.
+After cleaning, each PHQ-9 symptom item contained only valid values from 0 to 3 or missing values.
 
-Structurally missing `DPQ100` responses have not been recoded as a functional-difficulty category.
+# Stage 2A: Weighted descriptive analyses
 
-# Data-audit decisions
+## Analytic samples
 
-The current audit establishes that:
+The linked depression-screener dataset contains 8,965 adults.
 
-- `P_DPQ` contains 8,965 unique respondents;
-- all `P_DPQ` respondents link successfully to `P_DEMO`;
-- 8,276 respondents have valid responses to all nine PHQ-9 items;
-- 5,517 respondents have both a complete PHQ-9 and a valid `DPQ100` response;
-- non-substantive values must be recoded as missing before later analysis;
-- `DPQ100` system missingness is strongly associated with reporting zero on all nine symptom items;
-- all required survey-design variables are available.
+The analysis-specific samples are:
 
-# Scope boundary
+- **8,276 participants** with valid responses to all nine PHQ-9 items;
+- **5,522 participants** with complete PHQ-9 data and at least one endorsed symptom;
+- **5,517 participants** with complete PHQ-9 data, at least one endorsed symptom and valid `DPQ100`;
+- **2,754 participants** with zero on all nine PHQ-9 items and structurally skipped `DPQ100`;
+- **5 participants** with complete PHQ-9 data, at least one endorsed symptom and missing `DPQ100`.
 
-No reliability coefficients, polychoric correlations, factor models or clinical conclusions are reported at this stage.
+The complete-PHQ-9 sample is used for total-score and symptom-severity descriptives.
+
+Item-response estimates use all available valid responses for each individual item.
+
+The primary `DPQ100` distribution is restricted to routed respondents with valid responses.
+
+## Survey design
+
+The survey-design object was created from the full linked depression-screener dataset using:
+
+- examination weight: `WTMECPRP`;
+- masked variance stratum: `SDMVSTRA`;
+- masked variance primary sampling unit: `SDMVPSU`;
+- nested PSU identifiers within strata.
+
+The design contains 49 nested PSUs across 24 strata.
+
+No observed stratum contained fewer than two PSUs.
+
+Analysis-specific samples were defined as survey domains after the full survey-design object had been created.
+
+Weighted means and item-response proportions were estimated using `svymean()`. Item-response confidence intervals were calculated from the design-based standard errors.
+
+Weighted variances were estimated using `svyvar()`.
+
+Proportions for individual total scores, severity bands and `DPQ100` categories were estimated using `svyciprop()` with logit-transformed 95% confidence intervals.
+
+## Weighted PHQ-9 item-response proportions
+
+Item-specific valid sample sizes ranged from 8,295 to 8,299.
+
+The weighted response proportions sum to 100% within rounding error for each item.
+
+```{r}
+item_response_table <- read_stage2a_table(
+  "phq9_item_response_proportions.csv"
+) |>
+  transmute(
+    Item = item,
+    `Symptom content` = symptom_content,
+    Response = response_label,
+    `Unweighted n` = unweighted_n_response,
+    `Weighted estimate (95% CI)` = format_percent_ci(
+      weighted_percent,
+      ci_lower_percent,
+      ci_upper_percent
+    )
+  )
+
+kable(
+  item_response_table,
+  caption = paste(
+    "Weighted PHQ-9 item-response proportions.",
+    "Item-specific estimates use all available valid responses."
+  ),
+  align = c(
+    "l",
+    "l",
+    "l",
+    "r",
+    "r"
+  )
+)
+```
+
+```{r}
+#| fig-alt: "Stacked horizontal bar chart showing weighted response proportions for each of the nine PHQ-9 items."
+#| out-width: "100%"
+
+display_figure(
+  "phq9_item_response_proportions.png"
+)
+```
+
+## Weighted PHQ-9 total-score distribution
+
+The complete-PHQ-9 sample contains 8,276 participants.
+
+Observed PHQ-9 total scores range from 0 to 27.
+
+```{r}
+total_summary_raw <- read_stage2a_table(
+  "phq9_total_summary.csv"
+)
+
+total_summary_table <- tibble(
+  Measure = c(
+    "Unweighted sample size",
+    "Weighted mean",
+    "Standard error of weighted mean",
+    "95% confidence interval for weighted mean",
+    "Weighted standard deviation",
+    "Observed minimum",
+    "Observed maximum"
+  ),
+  Estimate = c(
+    format(
+      total_summary_raw$unweighted_n,
+      big.mark = ","
+    ),
+    formatC(
+      total_summary_raw$weighted_mean,
+      format = "f",
+      digits = 2
+    ),
+    formatC(
+      total_summary_raw$standard_error,
+      format = "f",
+      digits = 2
+    ),
+    paste0(
+      formatC(
+        total_summary_raw$ci_lower,
+        format = "f",
+        digits = 2
+      ),
+      "–",
+      formatC(
+        total_summary_raw$ci_upper,
+        format = "f",
+        digits = 2
+      )
+    ),
+    formatC(
+      total_summary_raw$weighted_standard_deviation,
+      format = "f",
+      digits = 2
+    ),
+    total_summary_raw$observed_minimum,
+    total_summary_raw$observed_maximum
+  )
+)
+
+kable(
+  total_summary_table,
+  caption = "Weighted PHQ-9 total-score summary.",
+  align = c(
+    "l",
+    "r"
+  )
+)
+```
+
+The weighted mean PHQ-9 total score was 3.18, with a 95% confidence interval from 3.06 to 3.31.
+
+The weighted standard deviation was 4.09.
+
+```{r}
+total_distribution_table <- read_stage2a_table(
+  "phq9_total_distribution.csv"
+) |>
+  transmute(
+    `PHQ-9 total` = phq9_total,
+    `Unweighted n` = unweighted_n,
+    `Weighted estimate (95% CI)` = format_percent_ci(
+      weighted_percent,
+      ci_lower_percent,
+      ci_upper_percent
+    )
+  )
+
+kable(
+  total_distribution_table,
+  caption = paste(
+    "Weighted distribution of PHQ-9 total scores",
+    "in the complete-PHQ-9 sample."
+  ),
+  align = c(
+    "r",
+    "r",
+    "r"
+  )
+)
+```
+
+```{r}
+#| fig-alt: "Bar chart showing the weighted distribution of PHQ-9 total scores from 0 to 27."
+#| out-width: "100%"
+
+display_figure(
+  "phq9_total_score_distribution.png"
+)
+```
+
+## Weighted symptom-severity bands
+
+The conventional score bands used in this descriptive analysis are:
+
+- minimal: 0–4;
+- mild: 5–9;
+- moderate: 10–14;
+- moderately severe: 15–19;
+- severe: 20–27.
+
+These categories describe score ranges and are not treated as psychiatric diagnoses.
+
+```{r}
+severity_table <- read_stage2a_table(
+  "phq9_severity_distribution.csv"
+) |>
+  transmute(
+    `Severity band` = severity_band,
+    `Unweighted n` = unweighted_n,
+    `Weighted estimate (95% CI)` = format_percent_ci(
+      weighted_percent,
+      ci_lower_percent,
+      ci_upper_percent
+    )
+  )
+
+kable(
+  severity_table,
+  caption = paste(
+    "Weighted PHQ-9 symptom-severity bands",
+    "in the complete-PHQ-9 sample."
+  ),
+  align = c(
+    "l",
+    "r",
+    "r"
+  )
+)
+```
+
+The weighted distribution was 74.92% minimal, 16.54% mild, 5.95% moderate, 1.81% moderately severe and 0.78% severe.
+
+```{r}
+#| fig-alt: "Horizontal bar chart showing weighted PHQ-9 symptom-severity band percentages with 95% confidence intervals."
+#| out-width: "100%"
+
+display_figure(
+  "phq9_severity_distribution.png"
+)
+```
+
+## DPQ100 among routed respondents
+
+The primary functional-difficulty descriptive sample contains 5,517 participants who:
+
+- had complete PHQ-9 data;
+- endorsed at least one PHQ-9 symptom;
+- provided a valid `DPQ100` response.
+
+This section reports the weighted response distribution only.
+
+It does not model the relationship between PHQ-9 scores and functional difficulty.
+
+```{r}
+dpq100_routed_table <- read_stage2a_table(
+  "dpq100_routed_distribution.csv"
+) |>
+  transmute(
+    Response = response_label,
+    `Unweighted n` = unweighted_n,
+    `Weighted estimate (95% CI)` = format_percent_ci(
+      weighted_percent,
+      ci_lower_percent,
+      ci_upper_percent
+    )
+  )
+
+kable(
+  dpq100_routed_table,
+  caption = paste(
+    "Weighted DPQ100 distribution among routed respondents",
+    "with valid functional-difficulty data."
+  ),
+  align = c(
+    "l",
+    "r",
+    "r"
+  )
+)
+```
+
+Among routed respondents, 74.64% reported “not difficult at all,” 20.79% reported “somewhat difficult,” 3.40% reported “very difficult,” and 1.17% reported “extremely difficult.”
+
+```{r}
+#| fig-alt: "Horizontal bar chart showing weighted DPQ100 response percentages among routed respondents with 95% confidence intervals."
+#| out-width: "100%"
+
+display_figure(
+  "dpq100_routed_distribution.png"
+)
+```
+
+## Extended functional-difficulty categories
+
+The extended table uses the complete-PHQ-9 sample of 8,276 participants.
+
+Participants with zero on all nine PHQ-9 items are retained in a separate category:
+
+> No PHQ-9 symptoms / DPQ100 structurally skipped
+
+The five symptom-positive participants without a valid `DPQ100` response are also shown separately.
+
+Neither group is assigned to an observed functional-difficulty response category.
+
+```{r}
+dpq100_extended_table <- read_stage2a_table(
+  "dpq100_extended_distribution.csv"
+) |>
+  transmute(
+    Category = category,
+    `Unweighted n` = unweighted_n,
+    `Weighted estimate (95% CI)` = format_percent_ci(
+      weighted_percent,
+      ci_lower_percent,
+      ci_upper_percent
+    )
+  )
+
+kable(
+  dpq100_extended_table,
+  caption = paste(
+    "Extended weighted functional-difficulty distribution",
+    "in the complete-PHQ-9 sample."
+  ),
+  align = c(
+    "l",
+    "r",
+    "r"
+  )
+)
+```
+
+```{r}
+#| fig-alt: "Horizontal bar chart showing extended weighted functional-difficulty categories, including structural skips and missing DPQ100 responses."
+#| out-width: "100%"
+
+display_figure(
+  "dpq100_extended_distribution.png"
+)
+```
+
+# Stage 2A validation checks
+
+The following checks were completed:
+
+- the linked depression-screener sample contains 8,965 records;
+- the complete-PHQ-9 sample contains 8,276 records;
+- the symptom-positive complete-PHQ-9 sample contains 5,522 records;
+- the routed valid-`DPQ100` sample contains 5,517 records;
+- the structural-skip group contains 2,754 records;
+- the weighted response proportions sum to 100% within rounding error for each PHQ-9 item;
+- the score-distribution counts sum to 8,276;
+- the weighted score-distribution proportions sum to 100% within rounding error;
+- the severity-band counts sum to 8,276;
+- the weighted severity-band proportions sum to 100% within rounding error;
+- the routed `DPQ100` counts sum to 5,517;
+- the weighted routed-`DPQ100` proportions sum to 100% within rounding error;
+- the extended functional-difficulty counts sum to 8,276;
+- the weighted extended-category proportions sum to 100% within rounding error;
+- no symptom-free participant had a valid `DPQ100` response;
+- five symptom-positive participants had missing `DPQ100` responses and remain classified as missing.
+
+The completed survey-design object is saved locally as:
+
+```text
+data/processed/nhanes_design_stage2a.rds
+```
+
+The Stage 2A working dataset is saved locally as:
+
+```text
+data/processed/phq9_stage2a_data.rds
+```
+
+These processed files are excluded from version control.
+
+# Analyses not included in Stage 2A
+
+Stage 2A is limited to weighted descriptive analysis and sample reporting.
+
+The following analyses are outside the present stage:
+
+- ordinal coefficient alpha;
+- McDonald’s omega;
+- corrected item-total correlations;
+- polychoric correlations;
+- factor analysis;
+- functional-difficulty regression modelling;
+- diagnostic interpretation;
+- treatment-need claims.
+
+No conclusions about validity, unidimensionality, psychiatric diagnosis or treatment need are drawn from the Stage 2A descriptive results.

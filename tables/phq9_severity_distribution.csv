@@ -1,0 +1,6 @@
+"severity_band","unweighted_n","weighted_percent","standard_error_percent","ci_lower_percent","ci_upper_percent"
+"Minimal (0–4)",6109,74.92,0.68,73.49,76.3
+"Mild (5–9)",1400,16.54,0.7,15.14,18.04
+"Moderate (10–14)",502,5.95,0.45,5.1,6.94
+"Moderately severe (15–19)",190,1.81,0.17,1.5,2.19
+"Severe (20–27)",75,0.78,0.1,0.6,1.01

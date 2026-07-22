@@ -1,0 +1,7 @@
+"category","unweighted_n","weighted_percent","standard_error_percent","ci_lower_percent","ci_upper_percent"
+"No PHQ-9 symptoms / DPQ100 structurally skipped",2754,32.36,0.99,30.35,34.44
+"Not difficult at all",4060,50.47,1.05,48.3,52.64
+"Somewhat difficult",1177,14.05,0.57,12.91,15.28
+"Very difficult",209,2.3,0.34,1.7,3.11
+"Extremely difficult",71,0.79,0.14,0.55,1.14
+"Symptom-positive / DPQ100 missing",5,0.03,0.01,0.01,0.06

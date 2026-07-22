@@ -1,0 +1,37 @@
+"item","symptom_content","response","response_label","unweighted_n_response","unweighted_n_item","weighted_percent","standard_error_percent","ci_lower_percent","ci_upper_percent"
+"DPQ010","Little interest or pleasure",0,"Not at all",6166,8298,76.07,0.53,75.02,77.11
+"DPQ010","Little interest or pleasure",1,"Several days",1372,8298,16.09,0.51,15.09,17.09
+"DPQ010","Little interest or pleasure",2,"More than half the days",450,8298,4.56,0.34,3.89,5.23
+"DPQ010","Little interest or pleasure",3,"Nearly every day",310,8298,3.29,0.3,2.69,3.88
+"DPQ020","Depressed mood or hopelessness",0,"Not at all",6187,8299,75.69,0.75,74.23,77.16
+"DPQ020","Depressed mood or hopelessness",1,"Several days",1456,8299,18,0.77,16.5,19.5
+"DPQ020","Depressed mood or hopelessness",2,"More than half the days",387,8299,3.69,0.23,3.25,4.14
+"DPQ020","Depressed mood or hopelessness",3,"Nearly every day",269,8299,2.61,0.19,2.23,3
+"DPQ030","Sleep disturbance",0,"Not at all",5023,8298,59.55,0.75,58.07,61.03
+"DPQ030","Sleep disturbance",1,"Several days",1890,8298,24.14,0.71,22.74,25.53
+"DPQ030","Sleep disturbance",2,"More than half the days",621,8298,8.21,0.45,7.31,9.1
+"DPQ030","Sleep disturbance",3,"Nearly every day",764,8298,8.1,0.44,7.25,8.96
+"DPQ040","Tiredness or low energy",0,"Not at all",4164,8297,48.52,1.06,46.45,50.6
+"DPQ040","Tiredness or low energy",1,"Several days",2682,8297,33.89,1.27,31.4,36.38
+"DPQ040","Tiredness or low energy",2,"More than half the days",754,8297,9.24,0.45,8.36,10.13
+"DPQ040","Tiredness or low energy",3,"Nearly every day",697,8297,8.34,0.51,7.34,9.34
+"DPQ050","Appetite disturbance",0,"Not at all",6165,8299,75.33,0.91,73.54,77.11
+"DPQ050","Appetite disturbance",1,"Several days",1293,8299,15.86,0.73,14.42,17.3
+"DPQ050","Appetite disturbance",2,"More than half the days",464,8299,4.64,0.44,3.77,5.51
+"DPQ050","Appetite disturbance",3,"Nearly every day",377,8299,4.17,0.37,3.44,4.9
+"DPQ060","Negative self-evaluation",0,"Not at all",6881,8295,82.58,0.56,81.48,83.69
+"DPQ060","Negative self-evaluation",1,"Several days",968,8295,12.7,0.51,11.7,13.7
+"DPQ060","Negative self-evaluation",2,"More than half the days",239,8295,2.37,0.21,1.96,2.77
+"DPQ060","Negative self-evaluation",3,"Nearly every day",207,8295,2.35,0.15,2.06,2.65
+"DPQ070","Concentration difficulties",0,"Not at all",6862,8299,82.66,0.78,81.13,84.19
+"DPQ070","Concentration difficulties",1,"Several days",892,8299,11.23,0.59,10.07,12.39
+"DPQ070","Concentration difficulties",2,"More than half the days",254,8299,2.92,0.32,2.29,3.55
+"DPQ070","Concentration difficulties",3,"Nearly every day",291,8299,3.18,0.33,2.54,3.82
+"DPQ080","Psychomotor slowing or agitation",0,"Not at all",7422,8297,90.17,0.62,88.96,91.38
+"DPQ080","Psychomotor slowing or agitation",1,"Several days",531,8297,6.21,0.51,5.21,7.21
+"DPQ080","Psychomotor slowing or agitation",2,"More than half the days",196,8297,1.97,0.17,1.64,2.29
+"DPQ080","Psychomotor slowing or agitation",3,"Nearly every day",148,8297,1.65,0.27,1.12,2.18
+"DPQ090","Thoughts of death or self-harm",0,"Not at all",7976,8296,96.7,0.2,96.31,97.1
+"DPQ090","Thoughts of death or self-harm",1,"Several days",233,8296,2.43,0.2,2.04,2.83
+"DPQ090","Thoughts of death or self-harm",2,"More than half the days",51,8296,0.52,0.07,0.38,0.65
+"DPQ090","Thoughts of death or self-harm",3,"Nearly every day",36,8296,0.35,0.09,0.17,0.52

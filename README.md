@@ -14,31 +14,32 @@ The analysis plan is documented in [`ANALYSIS_PLAN.md`](ANALYSIS_PLAN.md).
 
 ## Current project stage
 
-**Stage 2A: weighted descriptive analysis and sample reporting**
+**Stage 2B: reliability and item analysis**
 
-Stage 1 has been completed. This included:
+Stage 2A weighted descriptive analysis has been completed and approved. It produced:
 
-* downloading and inspecting the depression and demographic files;
-* verifying linkage using `SEQN`;
-* documenting questionnaire response codes and missingness;
-* creating the PHQ-9 variable dictionary;
-* auditing the `DPQ100` response pattern;
-* defining analysis-specific samples;
-* checking the NHANES survey-design variables;
-* producing the initial sample-flow tables.
+- a validated NHANES complex survey-design object;
+- weighted PHQ-9 item-response proportions;
+- weighted PHQ-9 total-score descriptives;
+- weighted symptom-severity band estimates;
+- weighted `DPQ100` descriptives among routed respondents;
+- an extended functional-difficulty distribution with structural skips and missing responses shown separately;
+- exported descriptive tables and figures;
+- an updated Quarto report.
 
-Stage 2A will produce:
+Stage 2B will examine:
 
-* the NHANES survey-design object;
-* weighted PHQ-9 item-response proportions;
-* weighted PHQ-9 total-score descriptives;
-* weighted symptom-severity band estimates;
-* weighted `DPQ100` descriptives among routed respondents;
-* an extended functional-difficulty table that includes structural skips as a separate category;
-* exported tables and figures;
-* an updated Quarto report.
+- item floor effects and response-category sparsity;
+- corrected item-total correlations;
+- polychoric inter-item correlations;
+- ordinal coefficient alpha;
+- McDonald’s omega;
+- reliability estimates after removing individual items, where methodologically informative;
+- uncertainty intervals where feasible.
 
-Reliability, omega, polychoric correlations, factor analysis and functional-difficulty modelling have not yet begun.
+Reliability estimates will be interpreted as evidence of internal consistency, not as evidence that the PHQ-9 is valid or unidimensional.
+
+Factor analysis, confirmatory modelling, measurement invariance and functional-difficulty regression modelling have not begun.
 
 ## Dataset
 
@@ -197,16 +198,30 @@ Scripts 03–05 have not yet been used for substantive analysis.
 
 ### Stage 2A: weighted descriptives
 
-* [ ] Create the NHANES survey-design object
-* [ ] Calculate weighted PHQ-9 item-response proportions
-* [ ] Describe the weighted PHQ-9 total-score distribution
-* [ ] Calculate the weighted severity-band distribution
-* [ ] Describe `DPQ100` among routed respondents
-* [ ] Create the extended functional-difficulty category
-* [ ] Export descriptive tables and figures
-* [ ] Update the Quarto report
-* [ ] Complete the academic-voice and formatting check
-* [ ] Submit Stage 2A for Command Centre review
+- [x] Create the NHANES survey-design object
+- [x] Calculate weighted PHQ-9 item-response proportions
+- [x] Describe the weighted PHQ-9 total-score distribution
+- [x] Calculate the weighted severity-band distribution
+- [x] Describe `DPQ100` among routed respondents
+- [x] Create the extended functional-difficulty category
+- [x] Export descriptive tables and figures
+- [x] Update the Quarto report
+- [x] Complete the academic-voice and formatting check
+- [x] Obtain Command Centre approval
+
+### Stage 2B: reliability and item analysis
+
+- [ ] Assess item floor effects and category sparsity
+- [ ] Calculate corrected item-total correlations
+- [ ] Estimate the polychoric correlation matrix
+- [ ] Estimate ordinal coefficient alpha
+- [ ] Estimate McDonald’s omega
+- [ ] Examine reliability estimates after removing individual items
+- [ ] Calculate uncertainty intervals where feasible
+- [ ] Export Stage 2B tables and figures
+- [ ] Update the Quarto report
+- [ ] Complete the academic-voice and formatting check
+- [ ] Submit Stage 2B for Command Centre review
 
 Reliability, omega, polychoric correlations, factor analysis and functional-difficulty modelling will not begin until Stage 2A has been reviewed.
 

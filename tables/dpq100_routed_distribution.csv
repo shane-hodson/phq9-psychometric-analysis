@@ -1,0 +1,5 @@
+"dpq100_response","response_label","unweighted_n","weighted_percent","standard_error_percent","ci_lower_percent","ci_upper_percent"
+0,"Not difficult at all",4060,74.64,0.9,72.73,76.46
+1,"Somewhat difficult",1177,20.79,0.86,19.07,22.61
+2,"Very difficult",209,3.4,0.5,2.51,4.6
+3,"Extremely difficult",71,1.17,0.21,0.81,1.68
