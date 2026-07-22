@@ -122,11 +122,100 @@ display_figure <- function(file_name) {
     )
   }
 }
+
+# Stage 2B reliability and item-analysis outputs
+
+item_floor_sparsity_summary <- readr::read_csv(
+  here::here(
+    "tables",
+    "phq9_item_floor_sparsity_summary.csv"
+  ),
+  show_col_types = FALSE
+)
+
+corrected_item_total_correlations <- readr::read_csv(
+  here::here(
+    "tables",
+    "phq9_corrected_item_total_correlations.csv"
+  ),
+  show_col_types = FALSE
+)
+
+polychoric_matrix <- readr::read_csv(
+  here::here(
+    "tables",
+    "phq9_polychoric_matrix.csv"
+  ),
+  show_col_types = FALSE
+)
+
+polychoric_matrix_summary <- readr::read_csv(
+  here::here(
+    "tables",
+    "phq9_polychoric_matrix_summary.csv"
+  ),
+  show_col_types = FALSE
+)
+
+ordinal_alpha_summary <- readr::read_csv(
+  here::here(
+    "tables",
+    "phq9_ordinal_alpha_summary.csv"
+  ),
+  show_col_types = FALSE
+)
+
+ordinal_alpha_if_item_removed <- readr::read_csv(
+  here::here(
+    "tables",
+    "phq9_ordinal_alpha_if_item_removed.csv"
+  ),
+  show_col_types = FALSE
+)
+
+omega_total_summary <- readr::read_csv(
+  here::here(
+    "tables",
+    "phq9_omega_total_summary.csv"
+  ),
+  show_col_types = FALSE
+)
+
+omega_if_item_removed <- readr::read_csv(
+  here::here(
+    "tables",
+    "phq9_omega_if_item_removed.csv"
+  ),
+  show_col_types = FALSE
+)
+
+reliability_bootstrap_ci <- readr::read_csv(
+  here::here(
+    "tables",
+    "phq9_reliability_bootstrap_ci.csv"
+  ),
+  show_col_types = FALSE
+)
+
+reliability_bootstrap_diagnostics <- readr::read_csv(
+  here::here(
+    "tables",
+    "phq9_reliability_bootstrap_diagnostics.csv"
+  ),
+  show_col_types = FALSE
+)
 ```
 
 # Project status
 
-This report documents the completed data audit and the Stage 2A weighted descriptive analyses.
+This report documents the completed Stage 1 data audit, Stage 2A weighted descriptive analyses, and Stage 2B reliability and item analysis.
+
+Stage 1 includes:
+
+- source-file, linkage and response-code audits;
+- sample-definition and missingness checks;
+- evaluation of the `DPQ100` routing pattern;
+- validation of the required NHANES survey-design variables.
 
 Stage 2A includes:
 
@@ -135,10 +224,23 @@ Stage 2A includes:
 - weighted PHQ-9 total-score descriptives;
 - weighted symptom-severity band estimates;
 - weighted `DPQ100` descriptives among routed respondents;
-- an extended functional-difficulty distribution that retains structural skips as a separate category;
+- an extended functional-difficulty distribution retaining structural skips and missing responses as separate categories;
 - exported descriptive tables and figures.
 
-Reliability, omega, polychoric correlations, factor analysis, functional-difficulty modelling and clinical interpretation have not begun.
+Stage 2B includes:
+
+- assessment of item floor effects and response-category sparsity;
+- corrected item-total correlations;
+- estimation and validation of the polychoric correlation matrix;
+- ordinal coefficient alpha;
+- McDonald’s omega total;
+- reliability estimates after removing individual items;
+- nonparametric bootstrap confidence intervals based on 2,000 participant-level resamples;
+- exported reliability tables and figures.
+
+Factor analysis, confirmatory modelling, measurement invariance, functional-difficulty regression modelling, diagnostic interpretation and substantive clinical interpretation have not begun.
+
+Stage 2B reliability estimates are interpreted as evidence about internal consistency in the complete-PHQ-9 analytic sample. They are not treated as evidence of validity or unidimensionality.
 
 # Dataset
 
@@ -664,19 +766,523 @@ data/processed/phq9_stage2a_data.rds
 
 These processed files are excluded from version control.
 
-# Analyses not included in Stage 2A
+# Stage 2B: Reliability and item analysis
 
-Stage 2A is limited to weighted descriptive analysis and sample reporting.
+## Analytic sample
 
-The following analyses are outside the present stage:
+Stage 2B used the complete-PHQ-9 analytic sample of 8,276 participants.
 
-- ordinal coefficient alpha;
-- McDonald’s omega;
-- corrected item-total correlations;
-- polychoric correlations;
-- factor analysis;
+All nine PHQ-9 items had valid scores from 0 to 3 for every participant in this sample. No item-level missing values were present in the Stage 2B item matrix.
+
+The reliability analyses were sample-based psychometric analyses. Survey weights, strata and primary sampling units were not incorporated into the reliability coefficients. The resulting estimates therefore describe internal consistency in the complete-PHQ-9 analytic sample rather than nationally representative reliability parameters.
+
+## Methods
+
+### Item floor effects and response-category sparsity
+
+For each PHQ-9 item, the unweighted frequency and percentage of responses in categories 0, 1, 2 and 3 were calculated.
+
+The percentage responding 0 was used to describe the item floor effect. The percentage responding 3 was also reported.
+
+Response categories containing fewer than 1% of valid responses were flagged as sparse. This threshold was used as a descriptive screening rule only. It was not used as an automatic basis for collapsing response categories or removing an item.
+
+### Corrected item-total correlations
+
+Corrected item-total correlations were calculated as Pearson correlations between each PHQ-9 item and the sum of the remaining eight items.
+
+The focal item was excluded from its comparison score to avoid part–whole inflation.
+
+Two-sided 95% confidence intervals were calculated for each correlation. The manually calculated estimates were validated against the `r.drop` output from `psych::alpha()`.
+
+### Polychoric correlations
+
+A polychoric correlation matrix was estimated because the PHQ-9 items are ordered categorical variables with four response categories.
+
+The matrix was estimated using `psych::polychoric()` with:
+
+- a continuity correction of 0.5 for empty bivariate response cells;
+- global thresholds;
+- automatic matrix smoothing disabled.
+
+The raw matrix was checked for:
+
+- finite values;
+- symmetry;
+- unit diagonal values;
+- positive definiteness.
+
+Matrix smoothing would have been applied only if the raw matrix was not positive definite. The raw matrix was positive definite and did not require smoothing.
+
+The polychoric correlations are reported as item-association estimates. They are not interpreted as evidence that the PHQ-9 is unidimensional.
+
+### Ordinal coefficient alpha
+
+Ordinal coefficient alpha was calculated from the polychoric correlation matrix.
+
+For $k$ items and mean inter-item polychoric correlation $\bar{r}$, ordinal alpha was calculated as:
+
+$$
+\alpha =
+\frac{k\bar{r}}
+{1 + (k - 1)\bar{r}}
+$$
+
+The result was validated against the standardised alpha returned by `psych::alpha()` when applied to the same polychoric matrix.
+
+Ordinal alpha was also recalculated after removing each item individually. These item-removal estimates were treated as diagnostic information rather than automatic item-deletion criteria.
+
+### McDonald’s omega total
+
+McDonald’s omega total was estimated from a single-factor congeneric reliability model fitted to the polychoric correlation matrix using minimum-residual extraction.
+
+The one-factor model was used only to obtain the uniqueness estimates required for omega total. Factor loadings, model fit and alternative dimensional structures were not evaluated during Stage 2B.
+
+For the unit-weighted total score, omega total was calculated as:
+
+$$
+\omega_t =
+1 -
+\frac{\sum_i \theta_i}
+{\mathrm{Var}(X)}
+$$
+
+where $\theta_i$ denotes the estimated uniqueness of item $i$, and $\mathrm{Var}(X)$ is the observed variance of the standardised unit-weighted total score, calculated as the sum of all elements in the polychoric correlation matrix.
+
+Omega total was also recalculated after removing each item individually. These estimates were treated as diagnostic information and not as automatic item-deletion criteria.
+
+### Bootstrap uncertainty intervals
+
+Uncertainty intervals for ordinal alpha and omega total were estimated using 2,000 ordinary nonparametric participant-level bootstrap resamples.
+
+For each resample:
+
+1. participants were sampled with replacement;
+2. the polychoric correlation matrix was re-estimated;
+3. positive definiteness was checked;
+4. ordinal alpha was recalculated;
+5. omega total was recalculated.
+
+The reported 95% confidence intervals are percentile bootstrap intervals.
+
+These are participant-level bootstrap intervals for the complete analytic sample. They are not survey-design-based confidence intervals and should not be interpreted as nationally representative reliability intervals.
+
+## Results
+
+### Item floor effects and response-category sparsity
+
+```{r}
+item_floor_table <- item_floor_sparsity_summary |>
+  transmute(
+    Item = variable,
+    `Symptom content` = item,
+    `Response 0 (%)` = formatC(
+      floor_percentage,
+      format = "f",
+      digits = 2
+    ),
+    `Response 3 (%)` = formatC(
+      ceiling_percentage,
+      format = "f",
+      digits = 2
+    ),
+    `Smallest category (%)` = formatC(
+      smallest_category_percentage,
+      format = "f",
+      digits = 2
+    ),
+    `Empty categories` = number_empty_categories,
+    `Categories below 1%` =
+      sparse_response_categories_lt_1pct
+  )
+
+kable(
+  item_floor_table,
+  caption = paste(
+    "PHQ-9 item floor effects and response-category sparsity",
+    "in the complete-PHQ-9 analytic sample."
+  ),
+  align = c(
+    "l",
+    "l",
+    "r",
+    "r",
+    "r",
+    "r",
+    "l"
+  )
+)
+```
+
+No PHQ-9 item had an empty response category.
+
+The percentage responding 0 ranged from 50.20% for tiredness or low energy (`DPQ040`) to 96.20% for thoughts of death or self-harm (`DPQ090`).
+
+`DPQ090` had the strongest floor effect. Its response categories 2 and 3 each contained fewer than 1% of participants. No response category for any other item fell below the predefined 1% screening threshold.
+
+The sparse upper categories for `DPQ090` were retained. They were not collapsed, and the item was not removed.
+
+### Corrected item-total correlations
+
+```{r}
+corrected_item_total_table <-
+  corrected_item_total_correlations |>
+  transmute(
+    Item = variable,
+    `Symptom content` = item,
+    `Corrected item-total r` = formatC(
+      corrected_item_total_r,
+      format = "f",
+      digits = 3
+    ),
+    `95% CI` = paste0(
+      formatC(
+        confidence_interval_lower,
+        format = "f",
+        digits = 3
+      ),
+      "–",
+      formatC(
+        confidence_interval_upper,
+        format = "f",
+        digits = 3
+      )
+    ),
+    `p value` = if_else(
+      p_value < 0.001,
+      "< .001",
+      formatC(
+        p_value,
+        format = "f",
+        digits = 3
+      )
+    )
+  )
+
+kable(
+  corrected_item_total_table,
+  caption = paste(
+    "Corrected PHQ-9 item-total correlations.",
+    "Each item was correlated with the sum of the remaining eight items."
+  ),
+  align = c(
+    "l",
+    "l",
+    "r",
+    "r",
+    "r"
+  )
+)
+```
+
+All nine corrected item-total correlations were positive and statistically distinguishable from zero.
+
+The correlations ranged from 0.394 for `DPQ090` to 0.682 for depressed mood or hopelessness (`DPQ020`).
+
+The lower correlation for `DPQ090` is considered alongside its strong floor effect and sparse upper response categories. It is not treated as sufficient evidence for deleting the item.
+
+```{r}
+#| fig-alt: "Point and interval plot showing corrected item-total correlations for all nine PHQ-9 items."
+#| out-width: "100%"
+
+display_figure(
+  "phq9_corrected_item_total_correlations.png"
+)
+```
+
+### Polychoric correlation matrix
+
+```{r}
+polychoric_matrix_table <- polychoric_matrix |>
+  rename(
+    Item = variable
+  ) |>
+  mutate(
+    across(
+      -Item,
+      ~ round(.x, 3)
+    )
+  )
+
+kable(
+  polychoric_matrix_table,
+  caption = paste(
+    "Polychoric correlation matrix for the nine PHQ-9 items",
+    "in the complete-PHQ-9 analytic sample."
+  ),
+  align = c(
+    "l",
+    rep("r", 9)
+  )
+)
+```
+
+The polychoric matrix was finite, symmetric and positive definite. Its minimum eigenvalue was 0.204, and no smoothing was required.
+
+All off-diagonal correlations were positive. They ranged from 0.464 to 0.769, with a mean off-diagonal correlation of 0.570.
+
+The strongest estimated association was between depressed mood or hopelessness (`DPQ020`) and negative self-evaluation (`DPQ060`), $r = .769$.
+
+The weakest estimated association was between appetite disturbance (`DPQ050`) and thoughts of death or self-harm (`DPQ090`), $r = .464$.
+
+These correlations describe relationships among the ordered item responses. Their magnitude is not treated as proof that a one-factor model is adequate.
+
+```{r}
+#| fig-alt: "Heatmap showing the polychoric correlations among the nine PHQ-9 items."
+#| out-width: "90%"
+
+display_figure(
+  "phq9_polychoric_correlation_heatmap.png"
+)
+```
+
+### Ordinal alpha and omega total
+
+```{r}
+reliability_coefficients_table <- reliability_bootstrap_ci |>
+  transmute(
+    Coefficient = coefficient,
+    Estimate = formatC(
+      point_estimate,
+      format = "f",
+      digits = 3
+    ),
+    `Bootstrap standard error` = formatC(
+      bootstrap_standard_error,
+      format = "f",
+      digits = 4
+    ),
+    `95% bootstrap CI` = paste0(
+      formatC(
+        confidence_interval_lower,
+        format = "f",
+        digits = 3
+      ),
+      "–",
+      formatC(
+        confidence_interval_upper,
+        format = "f",
+        digits = 3
+      )
+    ),
+    `Successful resamples` = format(
+      successful_replicates,
+      big.mark = ","
+    )
+  )
+
+kable(
+  reliability_coefficients_table,
+  caption = paste(
+    "Ordinal internal-consistency estimates with",
+    "95% nonparametric percentile bootstrap intervals."
+  ),
+  align = c(
+    "l",
+    "r",
+    "r",
+    "r",
+    "r"
+  )
+)
+```
+
+Ordinal coefficient alpha was `r formatC(reliability_bootstrap_ci$point_estimate[reliability_bootstrap_ci$coefficient == "Ordinal coefficient alpha"], format = "f", digits = 3)`, with a 95% percentile bootstrap confidence interval from `r formatC(reliability_bootstrap_ci$confidence_interval_lower[reliability_bootstrap_ci$coefficient == "Ordinal coefficient alpha"], format = "f", digits = 3)` to `r formatC(reliability_bootstrap_ci$confidence_interval_upper[reliability_bootstrap_ci$coefficient == "Ordinal coefficient alpha"], format = "f", digits = 3)`.
+
+McDonald’s omega total was `r formatC(reliability_bootstrap_ci$point_estimate[reliability_bootstrap_ci$coefficient == "McDonald's omega total"], format = "f", digits = 3)`, with a 95% percentile bootstrap confidence interval from `r formatC(reliability_bootstrap_ci$confidence_interval_lower[reliability_bootstrap_ci$coefficient == "McDonald's omega total"], format = "f", digits = 3)` to `r formatC(reliability_bootstrap_ci$confidence_interval_upper[reliability_bootstrap_ci$coefficient == "McDonald's omega total"], format = "f", digits = 3)`.
+
+The bootstrap means were close to the point estimates, and estimated bootstrap bias was negligible.
+
+These coefficients provide strong internal-consistency evidence in the complete-PHQ-9 analytic sample. They do not establish that the PHQ-9 is valid, diagnostically accurate or adequately represented by one dimension.
+
+```{r}
+#| fig-alt: "Point and interval plot showing ordinal coefficient alpha and McDonald's omega total with bootstrap confidence intervals."
+#| out-width: "90%"
+
+display_figure(
+  "phq9_reliability_coefficients.png"
+)
+```
+
+### Reliability if an item was removed
+
+```{r}
+reliability_if_removed_table <-
+  ordinal_alpha_if_item_removed |>
+  select(
+    variable,
+    item,
+    ordinal_alpha_if_removed,
+    ordinal_alpha_change
+  ) |>
+  left_join(
+    omega_if_item_removed |>
+      select(
+        variable,
+        omega_total_if_removed,
+        omega_total_change
+      ),
+    by = "variable"
+  ) |>
+  transmute(
+    Item = variable,
+    `Symptom content` = item,
+    `Ordinal alpha if removed` = formatC(
+      ordinal_alpha_if_removed,
+      format = "f",
+      digits = 3
+    ),
+    `Change in alpha` = formatC(
+      ordinal_alpha_change,
+      format = "f",
+      digits = 4
+    ),
+    `Omega total if removed` = formatC(
+      omega_total_if_removed,
+      format = "f",
+      digits = 3
+    ),
+    `Change in omega` = formatC(
+      omega_total_change,
+      format = "f",
+      digits = 4
+    )
+  )
+
+kable(
+  reliability_if_removed_table,
+  caption = paste(
+    "Ordinal alpha and omega total after removing",
+    "each PHQ-9 item individually."
+  ),
+  align = c(
+    "l",
+    "l",
+    "r",
+    "r",
+    "r",
+    "r"
+  )
+)
+```
+
+Removing any individual item lowered both ordinal alpha and omega total.
+
+The largest decreases occurred when `DPQ020` was removed. Ordinal alpha decreased by 0.0160 and omega total decreased by 0.0164.
+
+The item-removal results do not support improving internal consistency by deleting any single PHQ-9 item. They are not interpreted as evidence that every item is interchangeable or that item content should be judged only by its contribution to a reliability coefficient.
+
+### Bootstrap diagnostics
+
+```{r}
+bootstrap_diagnostics_table <- tibble(
+  Measure = c(
+    "Requested bootstrap resamples",
+    "Successful bootstrap resamples",
+    "Failed bootstrap resamples",
+    "Resampled matrices requiring smoothing",
+    "Resamples producing computational warnings",
+    "Minimum raw matrix eigenvalue across resamples",
+    "Elapsed computation time"
+  ),
+  Result = c(
+    format(
+      reliability_bootstrap_diagnostics$
+        requested_replicates,
+      big.mark = ","
+    ),
+    format(
+      reliability_bootstrap_diagnostics$
+        successful_replicates,
+      big.mark = ","
+    ),
+    reliability_bootstrap_diagnostics$
+      failed_replicates,
+    reliability_bootstrap_diagnostics$
+      smoothed_matrices,
+    reliability_bootstrap_diagnostics$
+      replicates_with_warnings,
+    formatC(
+      reliability_bootstrap_diagnostics$
+        minimum_raw_eigenvalue,
+      format = "f",
+      digits = 3
+    ),
+    paste0(
+      formatC(
+        reliability_bootstrap_diagnostics$
+          elapsed_minutes,
+        format = "f",
+        digits = 2
+      ),
+      " minutes"
+    )
+  )
+)
+
+kable(
+  bootstrap_diagnostics_table,
+  caption = "Stage 2B reliability-bootstrap diagnostics.",
+  align = c(
+    "l",
+    "r"
+  )
+)
+```
+
+All 2,000 bootstrap resamples completed successfully.
+
+No resampled polychoric matrix required smoothing, and no resample produced a computational warning. The minimum raw eigenvalue observed across the resampled matrices was 0.171.
+
+# Stage 2B validation checks
+
+The following checks were completed:
+
+- the Stage 2B complete-PHQ-9 sample contains 8,276 participants;
+- the Stage 2B item matrix contains nine items;
+- all item values fall within the approved range from 0 to 3;
+- the Stage 2B item matrix contains no missing values;
+- each item-response distribution sums to 8,276 participants;
+- each item-response distribution sums to 100% within numerical tolerance;
+- no PHQ-9 item has an empty response category;
+- only `DPQ090` has response categories below the 1% screening threshold;
+- manually calculated corrected item-total correlations match `psych::alpha()` `r.drop` values within numerical precision;
+- the maximum item-total validation difference was approximately `6.13e-14`;
+- the raw polychoric matrix is finite, symmetric and positive definite;
+- the raw polychoric matrix has a minimum eigenvalue of 0.204;
+- the polychoric matrix did not require smoothing;
+- the manually calculated ordinal alpha matches the standardised alpha from `psych::alpha()` exactly;
+- the two algebraically equivalent omega-total calculations agree within approximately `1.11e-16`;
+- removing any individual item lowers both ordinal alpha and omega total;
+- all 2,000 final bootstrap resamples completed successfully;
+- no final bootstrap replicate required matrix smoothing;
+- no final bootstrap replicate produced a computational warning.
+
+The final bootstrap object is saved locally as:
+
+```text
+data/processed/phq9_reliability_bootstrap_stage2b.rds
+```
+
+This processed object is excluded from version control.
+
+# Analyses not included in Stage 2B
+
+Stage 2B is limited to reliability and item analysis.
+
+The following analyses remain outside the present stage:
+
+- exploratory factor analysis;
+- confirmatory factor analysis;
+- evaluation of one-factor model fit;
+- comparison of alternative factor structures;
+- measurement-invariance testing;
+- survey-weighted latent-variable modelling;
 - functional-difficulty regression modelling;
+- diagnostic-accuracy analysis;
 - diagnostic interpretation;
-- treatment-need claims.
+- treatment-need claims;
+- substantive clinical interpretation.
 
-No conclusions about validity, unidimensionality, psychiatric diagnosis or treatment need are drawn from the Stage 2A descriptive results.
+A single-factor congeneric model was used only to obtain the uniqueness estimates required for omega total. Its factor loadings and model fit were not interpreted as evidence about the dimensional structure of the PHQ-9.
+
+The Stage 2B findings provide evidence about internal consistency and item relationships in the complete-PHQ-9 analytic sample. They do not establish validity, unidimensionality, diagnostic accuracy, psychiatric diagnosis or treatment need.

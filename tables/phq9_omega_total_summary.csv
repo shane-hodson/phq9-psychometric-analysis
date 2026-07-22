@@ -1,0 +1,2 @@
+sample_n,number_of_items,correlation_type,extraction_method,reliability_model,omega_definition,observed_total_score_variance,sum_uniquenesses,omega_total,matrix_smoothed
+8276,9,Polychoric,Minimum residual,Single-factor congeneric,1 - sum(uniquenesses) / observed total-score variance,50.01832000194966,3.8426588755374995,0.9231749711828043,FALSE

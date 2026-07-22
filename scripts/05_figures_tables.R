@@ -129,6 +129,257 @@ total_distribution_data <- read.csv(
   fileEncoding = "UTF-8"
 )
 
+# ==============================================================================
+# Stage 2B figures: reliability and item analysis
+# ==============================================================================
+
+
+# 1. Load Stage 2B output tables ------------------------------------------------
+
+item_total_table <- readr::read_csv(
+  here::here(
+    "tables",
+    "phq9_corrected_item_total_correlations.csv"
+  ),
+  show_col_types = FALSE
+)
+
+polychoric_long_table <- readr::read_csv(
+  here::here(
+    "tables",
+    "phq9_polychoric_matrix_long.csv"
+  ),
+  show_col_types = FALSE
+)
+
+reliability_ci_table <- readr::read_csv(
+  here::here(
+    "tables",
+    "phq9_reliability_bootstrap_ci.csv"
+  ),
+  show_col_types = FALSE
+)
+
+phq9_item_order <- c(
+  "DPQ010",
+  "DPQ020",
+  "DPQ030",
+  "DPQ040",
+  "DPQ050",
+  "DPQ060",
+  "DPQ070",
+  "DPQ080",
+  "DPQ090"
+)
+
+
+# 2. Corrected item-total correlation figure -----------------------------------
+
+item_total_figure_data <- item_total_table |>
+  dplyr::mutate(
+    variable = factor(
+      variable,
+      levels = rev(phq9_item_order)
+    ),
+    figure_label = paste0(
+      variable,
+      ": ",
+      item
+    )
+  )
+
+item_total_figure <- ggplot2::ggplot(
+  item_total_figure_data,
+  ggplot2::aes(
+    x = corrected_item_total_r,
+    y = reorder(
+      figure_label,
+      as.numeric(variable)
+    )
+  )
+) +
+  ggplot2::geom_errorbar(
+    ggplot2::aes(
+      xmin = confidence_interval_lower,
+      xmax = confidence_interval_upper
+    ),
+    orientation = "y",
+    width = 0.15
+  ) +
+  ggplot2::geom_point(
+    size = 2.5
+  ) +
+  ggplot2::scale_x_continuous(
+    limits = c(0, 0.75),
+    breaks = seq(0, 0.7, by = 0.1)
+  ) +
+  ggplot2::labs(
+    title = "Corrected PHQ-9 item–total correlations",
+    subtitle = "Pearson correlations between each item and the sum of the remaining eight items",
+    x = "Corrected item–total correlation",
+    y = NULL,
+    caption = "Error bars show 95% confidence intervals."
+  ) +
+  ggplot2::theme_minimal(base_size = 11) +
+  ggplot2::theme(
+    panel.grid.major.y = ggplot2::element_blank(),
+    plot.title.position = "plot"
+  )
+
+ggplot2::ggsave(
+  filename = here::here(
+    "figures",
+    "phq9_corrected_item_total_correlations.png"
+  ),
+  plot = item_total_figure,
+  width = 9,
+  height = 5.5,
+  dpi = 300
+)
+
+
+# 3. Polychoric correlation heatmap --------------------------------------------
+
+polychoric_heatmap_data <- polychoric_long_table |>
+  dplyr::mutate(
+    item_1 = factor(
+      item_1,
+      levels = phq9_item_order
+    ),
+    item_2 = factor(
+      item_2,
+      levels = rev(phq9_item_order)
+    ),
+    item_1_number = match(
+      as.character(item_1),
+      phq9_item_order
+    ),
+    item_2_number = match(
+      as.character(item_2),
+      phq9_item_order
+    )
+  ) |>
+  dplyr::filter(
+    item_1_number <= item_2_number
+  )
+
+polychoric_heatmap <- ggplot2::ggplot(
+  polychoric_heatmap_data,
+  ggplot2::aes(
+    x = item_1,
+    y = item_2,
+    fill = polychoric_r
+  )
+) +
+  ggplot2::geom_tile(
+    linewidth = 0.4
+  ) +
+  ggplot2::geom_text(
+    ggplot2::aes(
+      label = sprintf("%.2f", polychoric_r)
+    ),
+    size = 3.1
+  ) +
+  ggplot2::scale_fill_gradient(
+    limits = c(0.45, 1),
+    name = "Polychoric\ncorrelation"
+  ) +
+  ggplot2::coord_fixed() +
+  ggplot2::labs(
+    title = "PHQ-9 polychoric correlation matrix",
+    subtitle = "Complete-PHQ-9 analytic sample, n = 8,276",
+    x = NULL,
+    y = NULL,
+    caption = "The matrix was positive definite and did not require smoothing."
+  ) +
+  ggplot2::theme_minimal(base_size = 11) +
+  ggplot2::theme(
+    panel.grid = ggplot2::element_blank(),
+    axis.text.x = ggplot2::element_text(
+      angle = 45,
+      hjust = 1
+    ),
+    plot.title.position = "plot"
+  )
+
+ggplot2::ggsave(
+  filename = here::here(
+    "figures",
+    "phq9_polychoric_correlation_heatmap.png"
+  ),
+  plot = polychoric_heatmap,
+  width = 8,
+  height = 7,
+  dpi = 300
+)
+
+
+# 4. Reliability-coefficient figure --------------------------------------------
+
+reliability_figure_data <- reliability_ci_table |>
+  dplyr::mutate(
+    coefficient = factor(
+      coefficient,
+      levels = rev(c(
+        "Ordinal coefficient alpha",
+        "McDonald's omega total"
+      ))
+    )
+  )
+
+reliability_figure <- ggplot2::ggplot(
+  reliability_figure_data,
+  ggplot2::aes(
+    x = point_estimate,
+    y = coefficient
+  )
+) +
+  ggplot2::geom_errorbar(
+    ggplot2::aes(
+      xmin = confidence_interval_lower,
+      xmax = confidence_interval_upper
+    ),
+    orientation = "y",
+    width = 0.12
+  ) +
+  ggplot2::geom_point(
+    size = 3
+  ) +
+  ggplot2::scale_x_continuous(
+    limits = c(0.90, 0.94),
+    breaks = seq(0.90, 0.94, by = 0.01)
+  ) +
+  ggplot2::labs(
+    title = "PHQ-9 internal-consistency estimates",
+    subtitle = "Ordinal reliability coefficients based on the polychoric correlation matrix",
+    x = "Reliability coefficient",
+    y = NULL,
+    caption = "Error bars show 95% nonparametric percentile bootstrap intervals based on 2,000 participant-level resamples."
+  ) +
+  ggplot2::theme_minimal(base_size = 11) +
+  ggplot2::theme(
+    panel.grid.major.y = ggplot2::element_blank(),
+    plot.title.position = "plot"
+  )
+
+ggplot2::ggsave(
+  filename = here::here(
+    "figures",
+    "phq9_reliability_coefficients.png"
+  ),
+  plot = reliability_figure,
+  width = 8,
+  height = 4,
+  dpi = 300
+)
+
+
+# 5. Confirm figure export ------------------------------------------------------
+
+cat("\nThree Stage 2B figures exported successfully:\n")
+cat("- figures/phq9_corrected_item_total_correlations.png\n")
+cat("- figures/phq9_polychoric_correlation_heatmap.png\n")
+cat("- figures/phq9_reliability_coefficients.png\n")
 total_score_figure <- ggplot(
   total_distribution_data,
   aes(

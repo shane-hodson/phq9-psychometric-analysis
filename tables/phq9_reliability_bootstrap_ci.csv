@@ -1,0 +1,3 @@
+coefficient,point_estimate,bootstrap_mean,bootstrap_standard_error,bootstrap_bias,confidence_level,confidence_interval_method,confidence_interval_lower,confidence_interval_upper,requested_replicates,successful_replicates
+Ordinal coefficient alpha,0.922574168832433,0.9225097038267979,0.002155121596197932,-6.446500563517255e-5,0.95,Nonparametric percentile bootstrap,0.9182694366830542,0.9265486399841415,2000,2000
+McDonald's omega total,0.9231749711828043,0.9231318483493958,0.002129402176953142,-4.3122833408570926e-5,0.95,Nonparametric percentile bootstrap,0.9189737209255121,0.9271361735114965,2000,2000

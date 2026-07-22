@@ -1,0 +1,2 @@
+sample_n,number_of_items,continuity_correction,global_thresholds,raw_matrix_positive_definite,matrix_smoothed,minimum_raw_eigenvalue,minimum_final_eigenvalue,minimum_off_diagonal_correlation,maximum_off_diagonal_correlation,mean_off_diagonal_correlation
+8276,9,0.5,TRUE,TRUE,FALSE,0.20381766488499078,0.20381766488499078,0.4641875529895474,0.7693903202536552,0.5696988889159675
