@@ -1,0 +1,2 @@
+number_of_items,all_uniquenesses_finite,all_uniquenesses_non_negative,all_uniquenesses_at_most_one,minimum_uniqueness,maximum_uniqueness
+9,TRUE,TRUE,TRUE,0.2360373691703983,0.5251019037653332

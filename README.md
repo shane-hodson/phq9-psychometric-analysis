@@ -1,8 +1,10 @@
 # Psychometric Evaluation of the PHQ-9 in U.S. Adults Using NHANES 2017–March 2020
 
 **Reliability, Dimensionality, Functional Difficulty, and Clinical Interpretation**
+
 **Repository:** `phq9-nhanes-psychometrics`
-**Current stage:** Stage 2A weighted descriptives complete and approved; Stage 2B reliability and item analysis in preparation
+
+**Current stage:** Stage 2B reliability and item analysis completed and methodologically approved; minor repository refinements in progress before Stage 3
 
 ## Overview
 
@@ -14,32 +16,53 @@ The analysis plan is documented in [`ANALYSIS_PLAN.md`](ANALYSIS_PLAN.md).
 
 ## Current project stage
 
-**Stage 2B: reliability and item analysis**
+### Stage 2B: reliability and item analysis
 
-Stage 2A weighted descriptive analysis has been completed and approved. It produced:
+Stage 2B has been completed and submitted for review.
 
-- a validated NHANES complex survey-design object;
-- weighted PHQ-9 item-response proportions;
-- weighted PHQ-9 total-score descriptives;
-- weighted symptom-severity band estimates;
-- weighted `DPQ100` descriptives among routed respondents;
-- an extended functional-difficulty distribution with structural skips and missing responses shown separately;
-- exported descriptive tables and figures;
+The analytical content has received methodological approval. Minor repository and reporting refinements are being completed before Stage 3 begins.
+
+Stage 2B includes:
+
+- assessment of item floor effects and response-category sparsity;
+- corrected item-total correlations;
+- estimation and validation of the polychoric correlation matrix;
+- ordinal coefficient alpha;
+- McDonald’s omega total;
+- reliability estimates after removing individual items;
+- 2,000 participant-level nonparametric bootstrap resamples;
+- bootstrap confidence intervals and computational diagnostics;
+- exported reliability tables and figures;
 - an updated Quarto report.
 
-Stage 2B will examine:
+The reliability analyses use the complete-PHQ-9 analytic sample and do not incorporate the NHANES survey weights, strata or primary sampling units.
 
-- item floor effects and response-category sparsity;
-- corrected item-total correlations;
-- polychoric inter-item correlations;
-- ordinal coefficient alpha;
-- McDonald’s omega;
-- reliability estimates after removing individual items, where methodologically informative;
-- uncertainty intervals where feasible.
+The estimates therefore describe internal consistency and item relationships in the analytic sample rather than nationally representative psychometric parameters.
 
-Reliability estimates will be interpreted as evidence of internal consistency, not as evidence that the PHQ-9 is valid or unidimensional.
+Reliability estimates are interpreted as evidence about internal consistency. They are not treated as evidence that the PHQ-9 is valid, diagnostically accurate or unidimensional.
 
 Factor analysis, confirmatory modelling, measurement invariance and functional-difficulty regression modelling have not begun.
+
+## Stage 2B headline results
+
+The complete-PHQ-9 psychometric sample contains **8,276 participants**.
+
+Key Stage 2B results include:
+
+- no PHQ-9 item had an empty response category;
+- item floor percentages ranged from 50.19% to 96.15%;
+- only `DPQ090` had response categories below the predefined 1% sparsity threshold;
+- corrected item-total correlations ranged from 0.394 to 0.682;
+- polychoric correlations ranged from 0.464 to 0.769;
+- the raw polychoric matrix was positive definite;
+- ordinal coefficient alpha was 0.923;
+- McDonald’s omega total was 0.923;
+- removing any individual item lowered both reliability coefficients;
+- all 2,000 final bootstrap resamples completed successfully;
+- no bootstrap matrix required smoothing;
+- no bootstrap replicate produced a computational warning.
+
+Because omega total was estimated from a one-factor congeneric model, its interpretation will be revisited after the Stage 3 dimensionality analysis.
 
 ## Dataset
 
@@ -47,8 +70,8 @@ The project uses the combined **NHANES 2017–March 2020 pre-pandemic release**.
 
 Primary files:
 
-* `P_DPQ.xpt`: Mental Health—Depression Screener
-* `P_DEMO.xpt`: demographic and survey-design variables
+- `P_DPQ.xpt`: Mental Health—Depression Screener
+- `P_DEMO.xpt`: demographic and survey-design variables
 
 Participants are linked across files using the respondent identifier `SEQN`.
 
@@ -60,19 +83,19 @@ The depression-screener file contains 8,965 adults who were successfully linked 
 
 The primary PHQ-9 descriptive and psychometric sample contains:
 
-* **8,276 participants with valid responses to all nine PHQ-9 items**
+- **8,276 participants with valid responses to all nine PHQ-9 items**
 
 The primary functional-difficulty sample contains:
 
-* **5,517 participants with complete PHQ-9 data**
-* at least one endorsed PHQ-9 symptom
-* a valid `DPQ100` response
+- **5,517 participants with complete PHQ-9 data**;
+- at least one endorsed PHQ-9 symptom;
+- a valid `DPQ100` response.
 
-A further 2,754 participants reported zero on all nine PHQ-9 items and had `DPQ100` recorded as system missing. This pattern is consistent with structural questionnaire routing among participants reporting no PHQ-9 symptoms.
+A further 2,754 participants reported zero on all nine PHQ-9 items and had `DPQ100` recorded as system missing.
 
-These structurally skipped values will not be recoded as “not at all difficult.”
+This pattern is consistent with structural questionnaire routing among participants reporting no PHQ-9 symptoms.
 
-In extended descriptive tables and figures, they will be shown as:
+These structurally skipped values are not recoded as “not difficult at all.” In extended descriptive tables and figures, they are shown as:
 
 > No PHQ-9 symptoms / DPQ100 structurally skipped
 
@@ -88,50 +111,59 @@ Each item is scored from 0 to 3. A complete total score ranges from 0 to 27.
 
 PHQ-9 scores are self-reported indicators of depressive symptom severity, not diagnoses.
 
-The available data do not establish whether a participant meets diagnostic criteria for a depressive disorder, requires treatment or would benefit from a particular intervention.
+The available data do not establish whether a participant:
 
-PHQ-9 item 9 concerns thoughts of death or self-harm. Endorsement is clinically important, but item 9 is not a standalone suicide-risk assessment. It does not establish intent, planning, imminence or overall suicide risk.
+- meets diagnostic criteria for a depressive disorder;
+- requires treatment;
+- would benefit from a particular intervention.
+
+PHQ-9 item 9 concerns thoughts of death or self-harm.
+
+Endorsement is clinically important, but item 9 is not a standalone suicide-risk assessment. It does not establish intent, planning, imminence or overall suicide risk.
 
 ## Planned version 1 analyses
 
-Version 1 is planned to include:
+Version 1 includes or is planned to include:
 
-* data and codebook audit;
-* sample-flow reporting;
-* weighted item-response descriptives;
-* weighted PHQ-9 total-score and severity-band descriptives;
-* ordinal coefficient alpha;
-* McDonald’s omega;
-* corrected item-total correlations;
-* polychoric inter-item correlations;
-* one-factor confirmatory factor analysis;
-* analysis of PHQ-9 scores in relation to functional difficulty;
-* discussion of interpretation and limitations.
+- data and codebook audit;
+- sample-flow reporting;
+- weighted item-response descriptives;
+- weighted PHQ-9 total-score and severity-band descriptives;
+- item floor-effect and response-category analysis;
+- corrected item-total correlations;
+- polychoric inter-item correlations;
+- ordinal coefficient alpha;
+- McDonald’s omega total;
+- one-factor dimensionality analysis;
+- analysis of PHQ-9 scores in relation to functional difficulty;
+- discussion of interpretation and limitations.
 
-Reliability coefficients will be reported as evidence of internal consistency, not as evidence that the measure is valid or unidimensional.
+Reliability coefficients are reported as evidence of internal consistency, not as evidence that the measure is valid or unidimensional.
 
 ## Not included in version 1
 
 Version 1 will not include:
 
-* diagnostic-accuracy analysis;
-* sensitivity or specificity estimates;
-* claims about treatment need;
-* claims that PHQ-9 scores establish a depressive disorder;
-* measurement-invariance testing;
-* survey-weighted latent-variable modelling.
+- diagnostic-accuracy analysis;
+- sensitivity or specificity estimates;
+- claims about treatment need;
+- claims that PHQ-9 scores establish a depressive disorder;
+- measurement-invariance testing;
+- survey-weighted latent-variable modelling.
 
 ## Survey weighting and psychometric analysis
 
-Weighted descriptive and functional-difficulty analyses will use:
+Weighted descriptive and functional-difficulty analyses use:
 
-* `WTMECPRP`: combined-cycle examination weight
-* `SDMVSTRA`: masked variance stratum
-* `SDMVPSU`: masked variance primary sampling unit
+- `WTMECPRP`: combined-cycle examination weight;
+- `SDMVSTRA`: masked variance stratum;
+- `SDMVPSU`: masked variance primary sampling unit.
 
-Weighted estimates will describe the U.S. civilian non-institutionalised adult population represented by the combined pre-pandemic release.
+Weighted estimates describe the U.S. civilian non-institutionalised adult population represented by the combined pre-pandemic release.
 
-Reliability and factor analyses will use the complete-PHQ-9 sample. Unless survey weights are incorporated into a specific psychometric model, these estimates will be described as results for the analytic sample rather than nationally representative latent-variable parameters.
+Reliability and dimensionality analyses use the complete-PHQ-9 sample.
+
+Unless survey weights are incorporated into a specific psychometric model, these estimates are described as results for the analytic sample rather than nationally representative latent-variable parameters.
 
 ## Repository structure
 
@@ -174,31 +206,31 @@ Scripts 00 and 01 contain the completed download, linkage, cleaning and data-aud
 
 Script 02 contains the completed Stage 2A weighted descriptive analyses.
 
-Script 05 currently contains the Stage 2A descriptive-figure workflow and may be extended with later approved figures.
+Script 03 contains the completed Stage 2B reliability and item analyses.
 
-Script 03 will contain the Stage 2B reliability and item analyses.
+Script 04 is reserved for the Stage 3 dimensionality analysis and has not yet been used for substantive analysis.
 
-Script 04 has not yet been used for substantive analysis.
+Script 05 contains the approved Stage 2A and Stage 2B figure-export workflow.
 
 ## Project status
 
 ### Stage 1: data audit
 
-* [x] Create GitHub repository
-* [x] Create local RStudio project
-* [x] Add repository folders and files
-* [x] Save the analysis plan
-* [x] Create the initial README
-* [x] Create and render the initial Quarto report
-* [x] Download the NHANES source files
-* [x] Verify `SEQN` linkage
-* [x] Create the PHQ-9 variable dictionary
-* [x] Audit response codes and missingness
-* [x] Audit the `DPQ100` response pattern
-* [x] Produce the initial sample-flow outputs
-* [x] Audit survey-design variables
-* [x] Save the cleaned data-audit dataset
-* [x] Commit and push Stage 1
+- [x] Create GitHub repository
+- [x] Create local RStudio project
+- [x] Add repository folders and files
+- [x] Save the analysis plan
+- [x] Create the initial README
+- [x] Create and render the initial Quarto report
+- [x] Download the NHANES source files
+- [x] Verify `SEQN` linkage
+- [x] Create the PHQ-9 variable dictionary
+- [x] Audit response codes and missingness
+- [x] Audit the `DPQ100` response pattern
+- [x] Produce the initial sample-flow outputs
+- [x] Audit survey-design variables
+- [x] Save the cleaned data-audit dataset
+- [x] Commit and push Stage 1
 
 ### Stage 2A: weighted descriptives
 
@@ -215,20 +247,42 @@ Script 04 has not yet been used for substantive analysis.
 
 ### Stage 2B: reliability and item analysis
 
-- [ ] Assess item floor effects and category sparsity
-- [ ] Calculate corrected item-total correlations
-- [ ] Estimate the polychoric correlation matrix
-- [ ] Estimate ordinal coefficient alpha
-- [ ] Estimate McDonald’s omega
-- [ ] Examine reliability estimates after removing individual items
-- [ ] Calculate uncertainty intervals where feasible
-- [ ] Export Stage 2B tables and figures
-- [ ] Update the Quarto report
-- [ ] Complete the academic-voice and formatting check
-- [ ] Submit Stage 2B for Command Centre review
+- [x] Assess item floor effects and category sparsity
+- [x] Calculate corrected item-total correlations
+- [x] Estimate the polychoric correlation matrix
+- [x] Estimate ordinal coefficient alpha
+- [x] Estimate McDonald’s omega total
+- [x] Examine reliability estimates after removing individual items
+- [x] Calculate participant-level bootstrap confidence intervals
+- [x] Export Stage 2B tables and figures
+- [x] Update the Quarto report
+- [x] Complete the academic-voice and formatting check
+- [x] Submit Stage 2B for Command Centre review
 
-Stage 2A has been approved. Stage 2B is limited to reliability and item analysis. Factor analysis, confirmatory modelling, measurement invariance and functional-difficulty regression modelling will not begin until Stage 2B has been reviewed.
+### Stage 3: dimensionality analysis
+
+- [ ] Lock the Stage 3 analysis plan
+- [ ] Create a fixed-seed development and validation split
+- [ ] Conduct ordinal parallel analysis
+- [ ] Conduct limited exploratory factor analysis
+- [ ] Fit the prespecified one-factor ordinal CFA
+- [ ] Evaluate global and local model fit
+- [ ] Document convergence, thresholds and residual diagnostics
+- [ ] Export Stage 3 tables and figures
+- [ ] Update the Quarto report
+- [ ] Submit Stage 3 for Command Centre review
+
+Stage 3 will not begin until the remaining Stage 2B repository refinements have been completed and verified.
 
 ## Application relevance
 
-This project is part of a clinically focused psychology research portfolio. It is intended to demonstrate skills in psychological assessment, reproducible research, survey-data handling, statistical analysis and clinically related interpretation.
+This project is part of a clinically focused psychology research portfolio.
+
+It is intended to demonstrate skills in:
+
+- psychological assessment;
+- reproducible research;
+- survey-data handling;
+- psychometric analysis;
+- statistical programming;
+- clinically responsible interpretation.

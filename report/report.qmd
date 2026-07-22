@@ -189,6 +189,14 @@ omega_if_item_removed <- readr::read_csv(
   show_col_types = FALSE
 )
 
+omega_uniqueness_summary <- readr::read_csv(
+  here::here(
+    "tables",
+    "phq9_omega_uniqueness_summary.csv"
+  ),
+  show_col_types = FALSE
+)
+
 reliability_bootstrap_ci <- readr::read_csv(
   here::here(
     "tables",
@@ -792,7 +800,7 @@ Corrected item-total correlations were calculated as Pearson correlations betwee
 
 The focal item was excluded from its comparison score to avoid part–whole inflation.
 
-Two-sided 95% confidence intervals were calculated for each correlation. The manually calculated estimates were validated against the `r.drop` output from `psych::alpha()`.
+Two-sided 95% confidence intervals were calculated using Fisher’s $z$ transformation, as implemented by `cor.test()` for Pearson correlations. The manually calculated estimates were validated against the `r.drop` output from `psych::alpha()`.
 
 ### Polychoric correlations
 
@@ -915,7 +923,7 @@ kable(
 
 No PHQ-9 item had an empty response category.
 
-The percentage responding 0 ranged from 50.20% for tiredness or low energy (`DPQ040`) to 96.20% for thoughts of death or self-harm (`DPQ090`).
+The percentage responding 0 ranged from 50.19% for tiredness or low energy (`DPQ040`) to 96.15% for thoughts of death or self-harm (`DPQ090`).
 
 `DPQ090` had the strongest floor effect. Its response categories 2 and 3 each contained fewer than 1% of participants. No response category for any other item fell below the predefined 1% screening threshold.
 
@@ -946,15 +954,6 @@ corrected_item_total_table <-
         format = "f",
         digits = 3
       )
-    ),
-    `p value` = if_else(
-      p_value < 0.001,
-      "< .001",
-      formatC(
-        p_value,
-        format = "f",
-        digits = 3
-      )
     )
   )
 
@@ -968,13 +967,12 @@ kable(
     "l",
     "l",
     "r",
-    "r",
     "r"
   )
 )
 ```
 
-All nine corrected item-total correlations were positive and statistically distinguishable from zero.
+All nine corrected item-total correlations were positive.
 
 The correlations ranged from 0.394 for `DPQ090` to 0.682 for depressed mood or hopelessness (`DPQ020`).
 
@@ -1090,9 +1088,13 @@ Ordinal coefficient alpha was `r formatC(reliability_bootstrap_ci$point_estimate
 
 McDonald’s omega total was `r formatC(reliability_bootstrap_ci$point_estimate[reliability_bootstrap_ci$coefficient == "McDonald's omega total"], format = "f", digits = 3)`, with a 95% percentile bootstrap confidence interval from `r formatC(reliability_bootstrap_ci$confidence_interval_lower[reliability_bootstrap_ci$coefficient == "McDonald's omega total"], format = "f", digits = 3)` to `r formatC(reliability_bootstrap_ci$confidence_interval_upper[reliability_bootstrap_ci$coefficient == "McDonald's omega total"], format = "f", digits = 3)`.
 
+All nine estimated uniqueness values used in the omega-total calculation were finite, non-negative and no greater than 1. They ranged from `r formatC(omega_uniqueness_summary$minimum_uniqueness, format = "f", digits = 3)` to `r formatC(omega_uniqueness_summary$maximum_uniqueness, format = "f", digits = 3)`.
+
+Because omega total was estimated from a one-factor congeneric model, its interpretation will be revisited after the Stage 3 dimensionality analysis.
+
 The bootstrap means were close to the point estimates, and estimated bootstrap bias was negligible.
 
-These coefficients provide strong internal-consistency evidence in the complete-PHQ-9 analytic sample. They do not establish that the PHQ-9 is valid, diagnostically accurate or adequately represented by one dimension.
+Ordinal alpha and omega total were high in the complete analytic sample. They provide evidence about internal consistency but do not establish that the PHQ-9 is valid, diagnostically accurate or adequately represented by one dimension.
 
 ```{r}
 #| fig-alt: "Point and interval plot showing ordinal coefficient alpha and McDonald's omega total with bootstrap confidence intervals."
@@ -1252,6 +1254,7 @@ The following checks were completed:
 - the polychoric matrix did not require smoothing;
 - the manually calculated ordinal alpha matches the standardised alpha from `psych::alpha()` exactly;
 - the two algebraically equivalent omega-total calculations agree within approximately `1.11e-16`;
+- all nine uniqueness estimates used for omega total were finite, non-negative and no greater than 1, with values ranging from 0.236 to 0.525;
 - removing any individual item lowers both ordinal alpha and omega total;
 - all 2,000 final bootstrap resamples completed successfully;
 - no final bootstrap replicate required matrix smoothing;

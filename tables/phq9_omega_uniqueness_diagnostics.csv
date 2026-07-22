@@ -1,0 +1,10 @@
+variable,item,uniqueness,uniqueness_is_finite,uniqueness_is_non_negative,uniqueness_is_at_most_one,uniqueness_is_valid
+DPQ010,Little interest or pleasure,0.43165610814063415,TRUE,TRUE,TRUE,TRUE
+DPQ020,Depressed mood or hopelessness,0.2360373691703983,TRUE,TRUE,TRUE,TRUE
+DPQ030,Sleep disturbance,0.5251019037653332,TRUE,TRUE,TRUE,TRUE
+DPQ040,Tiredness or low energy,0.44618400660174173,TRUE,TRUE,TRUE,TRUE
+DPQ050,Appetite disturbance,0.516594261325016,TRUE,TRUE,TRUE,TRUE
+DPQ060,Negative self-evaluation,0.32652820551387773,TRUE,TRUE,TRUE,TRUE
+DPQ070,Concentration difficulties,0.45348226083339127,TRUE,TRUE,TRUE,TRUE
+DPQ080,Psychomotor slowing or agitation,0.4692632000130271,TRUE,TRUE,TRUE,TRUE
+DPQ090,Thoughts of death or self-harm,0.4378115601740806,TRUE,TRUE,TRUE,TRUE

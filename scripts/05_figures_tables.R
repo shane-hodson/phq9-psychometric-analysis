@@ -257,6 +257,11 @@ polychoric_heatmap_data <- polychoric_long_table |>
     item_2_number = match(
       as.character(item_2),
       phq9_item_order
+    ),
+    text_colour = dplyr::if_else(
+      polychoric_r >= 0.70,
+      "white",
+      "black"
     )
   ) |>
   dplyr::filter(
@@ -276,12 +281,21 @@ polychoric_heatmap <- ggplot2::ggplot(
   ) +
   ggplot2::geom_text(
     ggplot2::aes(
-      label = sprintf("%.2f", polychoric_r)
+      label = sprintf(
+        "%.2f",
+        polychoric_r
+      ),
+      colour = text_colour
     ),
-    size = 3.1
+    size = 3.1,
+    show.legend = FALSE
   ) +
+  ggplot2::scale_colour_identity() +
   ggplot2::scale_fill_gradient(
-    limits = c(0.45, 1),
+    limits = c(
+      0.45,
+      1
+    ),
     name = "Polychoric\ncorrelation"
   ) +
   ggplot2::coord_fixed() +
@@ -290,9 +304,14 @@ polychoric_heatmap <- ggplot2::ggplot(
     subtitle = "Complete-PHQ-9 analytic sample, n = 8,276",
     x = NULL,
     y = NULL,
-    caption = "The matrix was positive definite and did not require smoothing."
+    caption = paste(
+      "The matrix was positive definite",
+      "and did not require smoothing."
+    )
   ) +
-  ggplot2::theme_minimal(base_size = 11) +
+  ggplot2::theme_minimal(
+    base_size = 11
+  ) +
   ggplot2::theme(
     panel.grid = ggplot2::element_blank(),
     axis.text.x = ggplot2::element_text(
@@ -310,7 +329,8 @@ ggplot2::ggsave(
   plot = polychoric_heatmap,
   width = 8,
   height = 7,
-  dpi = 300
+  dpi = 300,
+  bg = "white"
 )
 
 

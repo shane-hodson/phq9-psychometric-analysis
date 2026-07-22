@@ -1017,6 +1017,108 @@ omega_total_summary <- tibble(
     polychoric_matrix_smoothed
 )
 
+# Explicitly document and validate the uniqueness estimates -------------------
+
+omega_uniqueness_diagnostics <- tibble(
+  variable = phq9_items,
+  item = phq9_item_labels$item[
+    match(
+      phq9_items,
+      phq9_item_labels$variable
+    )
+  ],
+  uniqueness = omega_total_result$uniquenesses
+) |>
+  mutate(
+    uniqueness_is_finite =
+      is.finite(uniqueness),
+    uniqueness_is_non_negative =
+      uniqueness >= 0,
+    uniqueness_is_at_most_one =
+      uniqueness <= 1,
+    uniqueness_is_valid =
+      uniqueness_is_finite &
+      uniqueness_is_non_negative &
+      uniqueness_is_at_most_one
+  )
+
+if (!all(omega_uniqueness_diagnostics$uniqueness_is_valid)) {
+  stop(
+    paste(
+      "At least one uniqueness estimate used for omega total",
+      "was non-finite or outside the range from 0 to 1."
+    )
+  )
+}
+
+omega_uniqueness_summary <-
+  omega_uniqueness_diagnostics |>
+  summarise(
+    number_of_items = n(),
+    all_uniquenesses_finite =
+      all(uniqueness_is_finite),
+    all_uniquenesses_non_negative =
+      all(uniqueness_is_non_negative),
+    all_uniquenesses_at_most_one =
+      all(uniqueness_is_at_most_one),
+    minimum_uniqueness =
+      min(uniqueness),
+    maximum_uniqueness =
+      max(uniqueness)
+  )
+
+cat("\nOmega uniqueness diagnostics\n")
+cat("----------------------------\n")
+
+print(
+  omega_uniqueness_diagnostics |>
+    mutate(
+      uniqueness = round(
+        uniqueness,
+        4
+      )
+    ),
+  n = Inf
+)
+
+print(
+  omega_uniqueness_summary |>
+    mutate(
+      minimum_uniqueness = round(
+        minimum_uniqueness,
+        4
+      ),
+      maximum_uniqueness = round(
+        maximum_uniqueness,
+        4
+      )
+    ),
+  width = Inf
+)
+
+write_csv(
+  omega_uniqueness_diagnostics,
+  here(
+    "tables",
+    "phq9_omega_uniqueness_diagnostics.csv"
+  )
+)
+
+write_csv(
+  omega_uniqueness_summary,
+  here(
+    "tables",
+    "phq9_omega_uniqueness_summary.csv"
+  )
+)
+
+cat("\nExported omega uniqueness diagnostics:\n")
+cat(
+  "- tables/phq9_omega_uniqueness_diagnostics.csv\n"
+)
+cat(
+  "- tables/phq9_omega_uniqueness_summary.csv\n"
+)
 
 # 32. Validate the omega-total estimate ----------------------------------------
 
