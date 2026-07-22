@@ -2,7 +2,7 @@
 
 **Reliability, Dimensionality, Functional Difficulty, and Clinical Interpretation**
 **Repository:** `phq9-nhanes-psychometrics`
-**Current stage:** Stage 1 data audit complete; Stage 2A weighted descriptives in preparation.
+**Current stage:** Stage 2A weighted descriptives complete and approved; Stage 2B reliability and item analysis in preparation
 
 ## Overview
 
@@ -172,9 +172,13 @@ phq9-nhanes-psychometrics/
 
 Scripts 00 and 01 contain the completed download, linkage, cleaning and data-audit workflow.
 
-Script 02 will contain the Stage 2A weighted descriptive analyses.
+Script 02 contains the completed Stage 2A weighted descriptive analyses.
 
-Scripts 03–05 have not yet been used for substantive analysis.
+Script 05 currently contains the Stage 2A descriptive-figure workflow and may be extended with later approved figures.
+
+Script 03 will contain the Stage 2B reliability and item analyses.
+
+Script 04 has not yet been used for substantive analysis.
 
 ## Project status
 
@@ -223,8 +227,8 @@ Scripts 03–05 have not yet been used for substantive analysis.
 - [ ] Complete the academic-voice and formatting check
 - [ ] Submit Stage 2B for Command Centre review
 
-Reliability, omega, polychoric correlations, factor analysis and functional-difficulty modelling will not begin until Stage 2A has been reviewed.
+Stage 2A has been approved. Stage 2B is limited to reliability and item analysis. Factor analysis, confirmatory modelling, measurement invariance and functional-difficulty regression modelling will not begin until Stage 2B has been reviewed.
 
 ## Application relevance
 
-This project is part of a clinically focused psychology research portfolio. It is intended to demonstrate skills in psychological assessment, reproducible research, survey-data handling, statistical analysis and clinically bounded interpretation.
+This project is part of a clinically focused psychology research portfolio. It is intended to demonstrate skills in psychological assessment, reproducible research, survey-data handling, statistical analysis and clinically related interpretation.
