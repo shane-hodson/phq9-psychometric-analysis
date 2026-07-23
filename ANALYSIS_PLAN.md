@@ -194,7 +194,7 @@ Sleep variables will be treated as exploratory because sleep disturbance and fat
 
 ## 9. Completed Stage 1 analyses
 
-Stage 1 has been completed and approved.
+Stage 1 review and validation are complete.
 
 Completed work includes:
 
@@ -222,7 +222,7 @@ Stage 1 established that:
 
 ## 10. Completed Stage 2A analyses
 
-Stage 2A weighted descriptive analysis has been completed and approved.
+Stage 2A weighted descriptive analysis and validation are complete.
 
 ### 10.1 Survey design
 
@@ -481,7 +481,7 @@ phq9-nhanes-psychometrics/
 ### Stage 1: data audit
 
 - [x] Create the GitHub repository and local RStudio project.
-- [x] Add the approved directory structure.
+- [x] Add the documented directory structure.
 - [x] Save the analysis plan.
 - [x] Create the initial `README.md`.
 - [x] Create the six numbered R scripts.

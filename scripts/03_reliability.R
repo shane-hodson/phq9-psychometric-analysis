@@ -481,7 +481,7 @@ polychoric_result <- psych::polychoric(
 
 polychoric_matrix_raw <- polychoric_result$rho
 
-# Restore the approved item order explicitly.
+# Restore the prespecified item order explicitly.
 polychoric_matrix_raw <- polychoric_matrix_raw[
   phq9_items,
   phq9_items

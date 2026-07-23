@@ -1241,7 +1241,7 @@ The following checks were completed:
 
 - the Stage 2B complete-PHQ-9 sample contains 8,276 participants;
 - the Stage 2B item matrix contains nine items;
-- all item values fall within the approved range from 0 to 3;
+- all item values fall within the valid range from 0 to 3;
 - the Stage 2B item matrix contains no missing values;
 - each item-response distribution sums to 8,276 participants;
 - each item-response distribution sums to 100% within numerical tolerance;
