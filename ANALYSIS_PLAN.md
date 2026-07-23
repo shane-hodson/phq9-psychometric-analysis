@@ -1,9 +1,9 @@
 # Analysis Plan
 
 **Repository:** `phq9-nhanes-psychometrics`  
-**Analysis plan version:** 1.3  
+**Analysis plan version:** 1.4
 **Last updated:** 22 July 2026  
-**Current stage:** Stage 2A weighted descriptives complete and approved; Stage 2B reliability and item analysis planned.
+**Current stage:** Stage 2B reliability and item analysis complete; Stage 3 dimensionality planning is next.
 
 ## 1. Project title
 
@@ -274,31 +274,42 @@ Among the 5,517 routed respondents with valid `DPQ100`:
 
 These results are descriptive. Stage 2A did not estimate reliability, test dimensionality, model the relationship between PHQ-9 scores and functional difficulty, or draw diagnostic conclusions.
 
-## 11. Planned Stage 2B: Reliability and item analysis
+## 11. Completed Stage 2B: Reliability and item analysis
 
-Stage 2B will use the complete-PHQ-9 sample of 8,276 participants.
+Stage 2B used the complete-PHQ-9 sample of 8,276 participants.
 
-Stage 2B will include:
+The completed analysis included:
 
-- item floor effects;
-- response-category sparsity;
-- corrected item-total correlations;
-- polychoric inter-item correlations;
+- item floor effects and response-category sparsity;
+- corrected item-total correlations with Fisher’s z confidence intervals;
+- estimation and validation of the polychoric correlation matrix;
 - ordinal coefficient alpha;
-- McDonald’s omega;
-- reliability estimates after removing individual items where methodologically informative;
-- uncertainty intervals where feasible;
+- McDonald’s omega total from a one-factor congeneric reliability model;
+- reliability estimates after removing each item individually;
+- validation of the omega uniqueness estimates;
+- 2,000 participant-level nonparametric bootstrap resamples;
+- percentile bootstrap confidence intervals and computational diagnostics;
 - exported reliability and item-analysis tables;
-- any figures needed to communicate the results;
+- exported corrected item-total, polychoric-correlation and reliability figures;
 - an updated Quarto report section.
 
-The estimation method used for each reliability coefficient will be documented.
+Ordinal coefficient alpha was 0.923, with a 95% percentile bootstrap confidence interval of 0.918–0.927.
 
-Item-removal statistics will be treated as diagnostic information. They will not be used as an automatic basis for recommending deletion of PHQ-9 items.
+McDonald’s omega total was 0.923, with a 95% percentile bootstrap confidence interval of 0.919–0.927.
 
-Reliability coefficients will be reported as evidence of internal consistency, not as evidence that the PHQ-9 is valid or unidimensional.
+All nine omega uniqueness estimates were finite, non-negative and no greater than 1, with values ranging from 0.236 to 0.525.
 
-Stage 2B will not include:
+Removing any individual item lowered both ordinal alpha and omega total.
+
+All 2,000 bootstrap resamples completed successfully. No resampled polychoric matrix required smoothing, and no bootstrap replicate produced a computational warning.
+
+The estimation method used for each reliability coefficient was documented in the analysis script and Quarto report.
+
+Item-removal statistics were treated as diagnostic information and were not used as an automatic basis for recommending deletion of PHQ-9 items.
+
+Reliability coefficients were reported as evidence of internal consistency, not as evidence that the PHQ-9 is valid or unidimensional.
+
+Stage 2B did not include:
 
 - exploratory or confirmatory factor analysis;
 - measurement invariance;
@@ -484,7 +495,7 @@ phq9-nhanes-psychometrics/
 - [x] Construct and document the eligible analytic samples.
 - [x] Audit the NHANES survey-design variables.
 - [x] Produce the initial sample-flow and missingness outputs.
-- [x] Commit and obtain approval for Stage 1.
+- [x] Complete Stage 1 review and validation.
 
 ### Stage 2A: weighted descriptives
 
@@ -501,16 +512,32 @@ phq9-nhanes-psychometrics/
 
 ### Stage 2B: reliability and item analysis
 
-- [ ] Assess item floor effects and response-category sparsity.
-- [ ] Calculate corrected item-total correlations.
-- [ ] Estimate the polychoric correlation matrix.
-- [ ] Estimate ordinal coefficient alpha.
-- [ ] Estimate McDonald’s omega.
-- [ ] Examine reliability estimates after removing individual items where methodologically informative.
-- [ ] Calculate uncertainty intervals where feasible.
-- [ ] Export Stage 2B tables and any necessary figures.
-- [ ] Update the Quarto report.
-- [ ] Complete the academic-voice, methodological-language and formatting check.
-- [ ] Complete Stage 2B review and validation.
+- [x] Assess item floor effects and response-category sparsity.
+- [x] Calculate corrected item-total correlations.
+- [x] Estimate the polychoric correlation matrix.
+- [x] Estimate ordinal coefficient alpha.
+- [x] Estimate McDonald’s omega.
+- [x] Examine reliability estimates after removing individual items where methodologically informative.
+- [x] Calculate uncertainty intervals where feasible.
+- [x] Export Stage 2B tables and any necessary figures.
+- [x] Update the Quarto report.
+- [x] Complete the academic-voice, methodological-language and formatting check.
+- [x] Complete Stage 2B review and validation.
 
-Stage 2A review and validation are complete. Stage 2B is limited to reliability and item analysis. Factor analysis, confirmatory modelling, measurement invariance, functional-difficulty regression modelling and clinical interpretation will not begin until Stage 2B has been reviewed.
+### Stage 3: dimensionality analysis
+
+- [ ] Lock the Stage 3 dimensionality analysis plan.
+- [ ] Create a fixed-seed development and validation split.
+- [ ] Conduct ordinal parallel analysis in the development sample.
+- [ ] Conduct limited exploratory factor analysis in the development sample.
+- [ ] Fit the prespecified one-factor ordinal CFA in the validation sample.
+- [ ] Report standardised factor loadings.
+- [ ] Evaluate CFI, TLI, RMSEA and SRMR.
+- [ ] Document estimator, convergence and threshold diagnostics.
+- [ ] Examine local residuals without adding post hoc correlated residuals.
+- [ ] Consider an alternative factor model only if a clear, theoretically interpretable problem is identified.
+- [ ] Export Stage 3 tables and figures.
+- [ ] Update the Quarto report.
+- [ ] Complete Stage 3 review and validation.
+
+Stage 2A and Stage 2B review and validation are complete. Stage 3 has not begun and will start with a locked dimensionality analysis plan.

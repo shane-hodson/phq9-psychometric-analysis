@@ -73,7 +73,7 @@ phq9_items <- c(
 )
 
 
-# 4. Load the approved Stage 2A data object ------------------------------------
+# 4. Load the Stage 2A data object ---------------------------------------------
 
 stage2a_data_path <- here(
   "data",

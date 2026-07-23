@@ -4,7 +4,7 @@
 
 **Repository:** `phq9-nhanes-psychometrics`
 
-**Current stage:** Stage 2B reliability and item analysis completed and methodologically approved; minor repository refinements in progress before Stage 3
+**Current stage:** Stage 2B reliability and item analysis complete; Stage 3 dimensionality planning is next.
 
 ## Overview
 
@@ -18,9 +18,9 @@ The analysis plan is documented in [`ANALYSIS_PLAN.md`](ANALYSIS_PLAN.md).
 
 ### Stage 2B: reliability and item analysis
 
-Stage 2B has been completed and submitted for review.
+Stage 2B reliability and item analysis is complete.
 
-The analytical content has received methodological approval. Minor repository and reporting refinements are being completed before Stage 3 begins.
+The completed analysis includes item-level diagnostics, corrected item-total correlations, polychoric correlations, ordinal alpha, McDonald’s omega total, item-removal analyses, participant-level bootstrap intervals and computational validation.
 
 Stage 2B includes:
 
@@ -210,7 +210,7 @@ Script 03 contains the completed Stage 2B reliability and item analyses.
 
 Script 04 is reserved for the Stage 3 dimensionality analysis and has not yet been used for substantive analysis.
 
-Script 05 contains the approved Stage 2A and Stage 2B figure-export workflow.
+Script 05 contains the completed Stage 2A and Stage 2B figure-export workflow.
 
 ## Project status
 
@@ -272,7 +272,7 @@ Script 05 contains the approved Stage 2A and Stage 2B figure-export workflow.
 - [ ] Update the Quarto report
 - [ ] Complete Stage 3 review and validation
 
-Stage 3 will not begin until the remaining Stage 2B repository refinements have been completed and verified.
+Stage 2B review and validation are complete. Stage 3 will begin with a locked dimensionality analysis plan.
 
 ## Application relevance
 

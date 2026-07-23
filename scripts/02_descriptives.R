@@ -75,7 +75,7 @@ stage2a_data <- stage2a_data |>
     )
   )
 
-# Validate the approved Stage 2A sample definitions
+# Validate the Stage 2A sample definitions
 sample_validation <- stage2a_data |>
   summarise(
     depression_screener_sample = n(),
