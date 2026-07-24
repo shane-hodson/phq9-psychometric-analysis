@@ -1,9 +1,9 @@
 # Analysis Plan
 
 **Repository:** `phq9-nhanes-psychometrics`  
-**Analysis plan version:** 1.4
-**Last updated:** 22 July 2026  
-**Current stage:** Stage 2B reliability and item analysis complete; Stage 3 dimensionality planning is next.
+**Analysis plan version:** 1.5
+**Last updated:** 23 July 2026
+**Current stage:** Stage 3 dimensionality-analysis specification locked before analysis on 23 July 2026; implementation has not begun.
 
 ## 1. Project title
 
@@ -53,7 +53,7 @@ This sample is used for:
 - weighted symptom-severity band estimates;
 - reliability and item analysis;
 - polychoric correlations;
-- later dimensionality analysis.
+- dimensionality analysis.
 
 ### Symptom-positive complete-PHQ-9 sample
 
@@ -170,9 +170,11 @@ Sleep variables will be treated as exploratory because sleep disturbance and fat
 1. What are the weighted response distributions, endorsement rates and missingness patterns of the nine PHQ-9 items?
 2. What is the weighted distribution of PHQ-9 total scores and conventional symptom-severity bands?
 3. How consistently do the nine PHQ-9 items measure depressive symptom severity?
-4. Are the inter-item relationships compatible with a one-factor representation of depressive symptom severity?
+4. Are the relationships among the nine ordered PHQ-9 items reasonably compatible with a single general depressive-symptom factor?
 5. How are PHQ-9 scores associated with reported functional difficulty?
 6. What conclusions about symptom severity and functioning are supported, and which diagnostic or treatment-related conclusions are not supported?
+
+The Stage 3 dimensionality conclusion will concern compatibility with a one-factor representation. It will not be interpreted as proof of strict unidimensionality, construct validity, diagnostic accuracy or treatment need.
 
 ## 8. Exclusion and missing-data rules
 
@@ -318,28 +320,660 @@ Stage 2B did not include:
 - treatment-need claims;
 - substantive clinical interpretation.
 
-## 12. Later planned analyses
+## 12. Locked Stage 3 dimensionality-analysis specification
 
-### 12.1 Stage 3: One-factor dimensionality analysis
+### 12.1 Primary dimensionality question
 
-Stage 3 will evaluate whether the PHQ-9 data are compatible with a single general factor.
+Stage 3 will evaluate:
 
-The planned dimensionality analysis will include:
+> Are the relationships among the nine ordered PHQ-9 items reasonably compatible with a single general depressive-symptom factor?
 
-- review of the polychoric correlation matrix;
-- parallel-analysis evidence where appropriate;
-- a one-factor ordinal factor model;
-- an estimator appropriate for four-category ordered items;
-- standardised factor loadings;
-- relevant model-fit indices;
-- assessment of localised areas of poor fit;
-- evaluation of whether a one-factor model provides an adequate summary of the item structure.
+The conclusion will concern compatibility with a one-factor representation.
 
-A two-factor or bifactor model is not required for version 1. Alternative models may be considered only if the one-factor model shows a clear and theoretically interpretable area of poor fit.
+A favourable result will not be described as proof that:
 
-### 12.2 Functional-difficulty association
+- the PHQ-9 is strictly unidimensional;
+- the PHQ-9 has established construct validity in this sample;
+- participants meet diagnostic criteria for a depressive disorder;
+- any participant requires treatment;
+- a particular clinical decision is warranted.
 
-The relationship between PHQ-9 symptom severity and `DPQ100` will be examined using:
+### 12.2 Stage 3 analysis sample
+
+Stage 3 will use the existing complete-PHQ-9 analytic sample of 8,276 participants.
+
+Eligibility requires:
+
+- valid integer responses from 0 to 3 on all nine PHQ-9 items;
+- successful linkage through `SEQN`;
+- no missing PHQ-9 item response.
+
+`SEQN` will be retained for reproducible sample assignment but excluded from all factor models.
+
+The Stage 3 factor analyses will be unweighted. Their parameters will be described as psychometric estimates for the complete-PHQ-9 analytic sample rather than nationally representative latent-variable estimates.
+
+NHANES weights, strata and primary sampling units will not enter the version 1 factor models.
+
+### 12.3 Fixed development and validation split
+
+The complete-PHQ-9 sample will be divided into a fixed 50:50 development and validation split using:
+
+```r
+set.seed(20260723)
+```
+
+The intended sample sizes are:
+
+- development sample: `n = 4,138`
+- validation sample: `n = 4,138`
+
+The split will be a simple random participant-level allocation.
+
+The assignment will be saved with `SEQN` in a local processed-data object so that the exact split remains recoverable.
+
+Before any factor model is fitted, the following will be checked separately in the development and validation samples:
+
+- participant count;
+- duplicate `SEQN` values;
+- missingness;
+- valid item-response range;
+- integer response coding;
+- presence of all four response categories for every PHQ-9 item;
+- item-category frequencies;
+- item floor effects;
+- PHQ-9 total-score summaries and distribution.
+
+The split will not be rerandomised after its characteristics are inspected.
+
+An absent response category, unexpected missingness, incorrect sample size or other serious data problem will stop execution and require a documented analysis-plan amendment rather than use of another seed.
+
+Validation-sample factor results will not be inspected during the exploratory development stage.
+
+### 12.4 Development-sample polychoric matrix
+
+The development-sample polychoric correlation matrix will be estimated explicitly using:
+
+```r
+development_poly <- psych::polychoric(
+  development_items,
+  correct = 0.5,
+  smooth = FALSE,
+  global = TRUE,
+  progress = FALSE
+)
+```
+
+The following properties will be checked:
+
+- finite estimates;
+- expected dimensions;
+- expected item order;
+- symmetry;
+- unit diagonal;
+- correlations within the valid range;
+- positive definiteness;
+- minimum eigenvalue;
+- whether any warning was produced.
+
+Automatic matrix smoothing will not be used for the primary observed development matrix.
+
+A non-positive-definite matrix, invalid estimate or unexplained warning will stop Stage 3 execution for methodological review.
+
+The explicitly audited development matrix will be used for the exploratory factor analyses.
+
+### 12.5 Ordinal parallel analysis
+
+Ordinal factor parallel analysis will be conducted in the development sample using a separate fixed seed:
+
+```r
+set.seed(20260724)
+```
+
+The analysis will be run in a controlled single-core scope:
+
+```r
+parallel_results <- local({
+  old_options <- options(mc.cores = 1L)
+  on.exit(options(old_options), add = TRUE)
+
+  set.seed(20260724)
+
+  psych::fa.parallel(
+    x = development_items,
+    fm = "minres",
+    fa = "fa",
+    nfactors = 1,
+    n.iter = 1000,
+    SMC = FALSE,
+    sim = FALSE,
+    quant = 0.95,
+    cor = "poly",
+    correct = 0.5,
+    plot = FALSE
+  )
+})
+```
+
+The locked settings are:
+
+- `fm = "minres"`
+- `fa = "fa"`
+- `nfactors = 1`
+- `n.iter = 1000`
+- `SMC = FALSE`
+- `sim = FALSE`
+- `quant = 0.95`
+- `cor = "poly"`
+- `correct = 0.5`
+- `plot = FALSE`
+- `mc.cores = 1L`
+- fixed seed `20260724`
+
+With `sim = FALSE`, the null reference distributions will be generated by independently resampling each PHQ-9 item column with replacement. This preserves each item’s marginal category distribution while disrupting inter-item associations.
+
+The primary retention comparison will use factor eigenvalues rather than principal-component eigenvalues.
+
+Each observed factor eigenvalue will be compared with the corresponding 95th percentile of the resampled factor-eigenvalue distribution.
+
+The complete returned object will be saved locally as an excluded processed `.rds` file.
+
+The R version and installed `psych` package version will be recorded.
+
+Because `fa.parallel()` does not expose every matrix-control argument used in the explicit `polychoric()` call, the report will not claim that every internally generated null matrix was estimated with `smooth = FALSE`. The observed development-sample polychoric matrix itself will remain explicitly unsmoothed and separately audited.
+
+### 12.6 Parallel-analysis extraction and retention rule
+
+The percentile thresholds will be reconstructed from the replicate-level factor columns in `parallel_results$values`.
+
+The mean resampled eigenvalues stored in `parallel_results$fa.simr` will not be used as substitutes for the requested 95th-percentile thresholds.
+
+The expected factor columns will be defined as:
+
+```r
+factor_columns <- paste0("F", seq_along(phq9_items))
+```
+
+The returned object will be checked before extraction:
+
+```r
+stopifnot(
+  length(parallel_results$fa.values) == length(phq9_items),
+  nrow(parallel_results$values) == 1000L,
+  all(factor_columns %in% colnames(parallel_results$values))
+)
+```
+
+The replicate-level factor eigenvalues and their 95th percentiles will be extracted as follows:
+
+```r
+resampled_factor_eigenvalues <- parallel_results$values[
+  ,
+  factor_columns,
+  drop = FALSE
+]
+
+resampled_q95 <- apply(
+  resampled_factor_eigenvalues,
+  2,
+  stats::quantile,
+  probs = 0.95,
+  na.rm = TRUE
+)
+
+parallel_comparison <- tibble::tibble(
+  factor_number = seq_along(phq9_items),
+  observed_eigenvalue = parallel_results$fa.values,
+  resampled_q95 = unname(resampled_q95),
+  retained = observed_eigenvalue > resampled_q95
+)
+```
+
+The recorded custom recommendation will be the number of leading consecutive factors for which:
+
+```text
+observed factor eigenvalue > corresponding resampled 95th-percentile eigenvalue
+```
+
+Both sides of every comparison will be exported.
+
+The custom leading-consecutive recommendation will be checked against `parallel_results$nfact`.
+
+A disagreement between the custom result and `parallel_results$nfact` will stop execution rather than be silently resolved.
+
+A non-consecutive crossing pattern, unstable result or recommendation above three factors will be treated as an interpretive ambiguity. It will not justify unrestricted expansion of the model set.
+
+Parallel analysis will be treated as one source of evidence rather than an automatic factor-retention rule because large samples can support minor factors that have limited substantive importance.
+
+### 12.7 Limited exploratory factor analysis
+
+Development-sample exploratory factor analysis will include:
+
+1. a one-factor MINRES solution;
+2. a two-factor MINRES solution with oblimin rotation;
+3. a three-factor MINRES solution with oblimin rotation only when parallel analysis supports at least three factors.
+
+No four-factor or larger exploratory solution will be fitted in version 1.
+
+The exploratory analyses will use:
+
+- the explicitly estimated development-sample polychoric matrix;
+- `fm = "minres"`;
+- no rotation for the one-factor solution;
+- oblimin rotation for multifactor solutions;
+- `n.obs = 4138`;
+- the prespecified PHQ-9 item order.
+
+The following will be reported for each fitted solution where applicable:
+
+- pattern-matrix loadings;
+- factor correlations;
+- communalities;
+- uniquenesses;
+- item complexity;
+- reproduced correlations;
+- residual correlations;
+- root mean square residual information;
+- variance-accounted-for information;
+- convergence and warning information.
+
+The following will be treated as descriptive diagnostic flags rather than automatic deletion or retention rules:
+
+- primary loading below `.40`;
+- cross-loading of `.30` or greater;
+- difference below `.20` between the two largest loadings;
+- unusually large residual correlations;
+- a factor with fewer than three substantively coherent indicators;
+- a factor defined primarily by one unusual item;
+- a factor apparently driven by sparse response categories;
+- a factor apparently driven by wording or content overlap without broader theoretical coherence.
+
+No PHQ-9 item will be deleted during Stage 3.
+
+Exploratory results will not be described as confirmatory evidence.
+
+### 12.8 Development-stage model-freezing decision
+
+The one-factor CFA is compulsory and remains the primary validation model regardless of the exploratory results.
+
+At most one alternative multifactor CFA may be frozen before validation results are inspected.
+
+The permitted alternative is:
+
+- one correlated two-factor CFA; or
+- one correlated three-factor CFA.
+
+Both alternatives will not be carried forward as competing post hoc models.
+
+A multifactor candidate may be frozen only when all of the following conditions are met:
+
+- the factor count is supported by the development evidence;
+- the exploratory loading pattern is stable and substantively interpretable;
+- every factor has at least three coherent indicators;
+- the structure is psychologically meaningful;
+- the structure is not primarily driven by one unusual item;
+- the structure is not primarily driven by sparse categories;
+- the structure is not merely a wording-overlap artefact;
+- the proposed factors are allowed to correlate;
+- no CFA cross-loadings are introduced;
+- no correlated residuals are introduced;
+- the exact item-to-factor allocation is written into the analysis record before validation results are accessed.
+
+The model-freezing record will state:
+
+- whether an alternative model was retained;
+- the exploratory evidence supporting the decision;
+- the exact item allocation;
+- the theoretical interpretation of each factor;
+- the reasons the candidate met or failed the freezing criteria;
+- the date on which the decision was recorded.
+
+When no multifactor solution satisfies these conditions, only the prespecified one-factor CFA will be fitted in the validation sample.
+
+No bifactor model will be fitted in version 1.
+
+### 12.9 Primary validation-sample CFA
+
+The prespecified primary validation model is:
+
+```r
+one_factor_model <- '
+  Depression =~ DPQ010 + DPQ020 + DPQ030 +
+                DPQ040 + DPQ050 + DPQ060 +
+                DPQ070 + DPQ080 + DPQ090
+'
+```
+
+The model will be estimated using:
+
+```r
+cfa_fit <- lavaan::cfa(
+  model = one_factor_model,
+  data = validation_data,
+  ordered = phq9_items,
+  estimator = "WLSMV",
+  std.lv = TRUE
+)
+```
+
+The nine PHQ-9 indicators will be declared ordered.
+
+WLSMV is selected for the four-category ordinal indicators. Parameter estimation uses diagonally weighted least squares, with robust standard errors and a mean- and variance-adjusted test statistic.
+
+The default categorical-data parameterisation used by the installed `lavaan` version will be documented rather than changed without a methodological reason.
+
+The R version and installed `lavaan` version will be recorded.
+
+### 12.10 Role of any frozen alternative CFA
+
+The one-factor CFA is the primary validation model.
+
+Any frozen multifactor CFA will be treated as a secondary explanatory model intended to clarify coherent departures from the one-factor representation.
+
+The secondary model will be evaluated using the same categories of evidence as the primary model:
+
+- global-fit indices;
+- fully standardised loadings;
+- 95% Wald-type confidence intervals for standardised loadings;
+- factor correlations;
+- threshold diagnostics;
+- residual-correlation diagnostics;
+- convergence and computational checks;
+- substantive interpretability.
+
+A multifactor model will not replace the primary model solely because it produces numerically better fit.
+
+Interpretation of the alternative model will depend on whether any improvement is:
+
+- substantial rather than trivial;
+- consistent across global and local evidence;
+- supported by a coherent loading structure;
+- supported by interpretable factor correlations;
+- consistent with the frozen development-sample rationale.
+
+The one-factor compatibility conclusion will be based primarily on the one-factor model itself.
+
+The alternative model will be used to explain departures from the primary model rather than retroactively redefine the primary research question.
+
+No naïve subtraction of WLSMV chi-square statistics will be used as the primary model-selection rule.
+
+No formal chi-square difference test is required for version 1. Any later use of a formal robust difference-testing procedure would require a documented methodological amendment and an implementation appropriate to the fitted estimator.
+
+### 12.11 CFA fit-measure extraction
+
+Fit measures will be extracted using:
+
+```r
+cfa_fit_measures <- lavaan::fitMeasures(cfa_fit)
+```
+
+The complete named `fitMeasures()` vector will be retained locally for auditability.
+
+The exported fit table will report, where available:
+
+- mean- and variance-adjusted or scaled model chi-square statistic;
+- model degrees of freedom;
+- model-test p-value;
+- robust CFI;
+- robust TLI;
+- robust RMSEA;
+- robust RMSEA 90% confidence interval;
+- SRMR.
+
+Any prespecified robust measure that is unavailable or returned as `NA` will be reported and investigated rather than silently replaced with a different statistic.
+
+Global fit will be interpreted as a combined pattern.
+
+No single fit index or conventional cutoff will independently determine whether the model passes or fails.
+
+### 12.12 Fully standardised loadings
+
+The fully standardised solution will be extracted using:
+
+```r
+cfa_standardized <- lavaan::standardizedSolution(
+  cfa_fit,
+  type = "std.all",
+  ci = TRUE,
+  level = 0.95
+)
+```
+
+Rows with `op == "=~"` will be used to report:
+
+- fully standardised factor loadings;
+- standard errors;
+- 95% Wald-type confidence intervals.
+
+These intervals will not be described as bootstrap confidence intervals.
+
+Loading magnitude, direction, uncertainty and consistency across items will be considered together.
+
+No item will be removed solely because of a comparatively low loading.
+
+### 12.13 Threshold extraction
+
+Parameter estimates will be extracted using:
+
+```r
+cfa_parameters <- lavaan::parameterEstimates(
+  cfa_fit,
+  ci = TRUE,
+  level = 0.95
+)
+
+cfa_thresholds <- cfa_parameters |>
+  dplyr::filter(op == "|")
+```
+
+Thresholds will be checked within each item for:
+
+- finite estimates;
+- expected number of thresholds;
+- monotonically increasing order;
+- unexplained extreme values;
+- missing or duplicated estimates.
+
+An invalid threshold pattern or unexplained estimation problem will stop interpretation pending review.
+
+### 12.14 Residual and local-fit diagnostics
+
+Residual diagnostics will be extracted using:
+
+```r
+cfa_residuals <- lavaan::lavResiduals(
+  cfa_fit,
+  type = "cor.bentler",
+  zstat = TRUE,
+  summary = TRUE
+)
+```
+
+The analysis will distinguish between:
+
+- residual-correlation values;
+- z-standardised residual statistics;
+- summary measures such as SRMR.
+
+The absolute `.10` flag applies to residual-correlation values, not to z-standardised residual statistics.
+
+An absolute residual correlation of `.10` or greater will be treated as:
+
+- a descriptive flag;
+- evidence of a potentially notable local area of misfit;
+- a reason to inspect the substantive content of the item pair;
+- not a model pass/fail threshold;
+- not an automatic reason to add a correlated residual;
+- not an automatic reason to delete an item.
+
+The largest residual-correlation pairs will be reported.
+
+The analysis will examine whether flagged residuals:
+
+- are isolated;
+- cluster around a particular item;
+- form a coherent content-based pattern;
+- correspond to the frozen exploratory interpretation;
+- suggest a meaningful limitation of the one-factor representation.
+
+Modification indices will not be used as an automatic model-building procedure.
+
+No post hoc correlated residuals will be added in version 1.
+
+### 12.15 Computational and improper-solution checks
+
+For every validation model, the following will be documented:
+
+- convergence status;
+- estimator;
+- parameterisation;
+- number of observations;
+- number of free parameters;
+- model-test information;
+- warnings;
+- successful post-estimation checks;
+- finite parameter estimates;
+- threshold ordering;
+- standardised loading direction and magnitude;
+- residual variances;
+- latent-factor variances;
+- latent-factor correlations where applicable;
+- presence or absence of improper estimates.
+
+Potential improper solutions include:
+
+- non-finite estimates;
+- negative residual variances;
+- standardised estimates outside an interpretable range;
+- factor correlations at or above an absolute value of 1;
+- non-positive-definite latent covariance matrices;
+- unexplained computational warnings.
+
+An improper or non-converged model will not be substantively interpreted until the problem has been reviewed.
+
+### 12.16 Dimensionality interpretation categories
+
+The final Stage 3 conclusion will use one of three formulations.
+
+#### Compatible with a one-factor representation
+
+This conclusion may be used when:
+
+- global and local evidence is broadly supportive;
+- standardised loadings are substantively meaningful;
+- there is no serious coherent pattern of multidimensionality;
+- residual misfit is limited or substantively minor;
+- any alternative model does not reveal a clearly superior and coherent structure that materially changes interpretation.
+
+#### Mixed evidence
+
+This conclusion may be used when:
+
+- a strong general factor is evident;
+- most loadings are meaningful;
+- one or more global-fit indices indicate notable departure;
+- local residual patterns indicate some coherent misfit;
+- exploratory or secondary-model evidence suggests limited multidimensional structure;
+- the evidence does not justify a simple claim of either adequate unidimensionality or clear multidimensionality.
+
+#### Not adequately represented by one factor
+
+This conclusion may be used when:
+
+- several forms of evidence converge on substantial misfit;
+- local residuals form a coherent pattern;
+- exploratory evidence supports an interpretable multifactor structure;
+- a frozen alternative model provides substantially and consistently better explanation;
+- the departure is not merely statistical sensitivity caused by the large sample.
+
+Even a favourable result will not be described as proving strict unidimensionality.
+
+### 12.17 Stage 3 interpretation boundaries
+
+Stage 3 will distinguish:
+
+- internal consistency from dimensionality;
+- dimensionality from validity;
+- a strong general factor from strict unidimensionality;
+- sample-based psychometric estimates from population-weighted estimates;
+- symptom measurement from diagnosis;
+- statistical model fit from clinical utility;
+- exploratory findings from validation evidence.
+
+Stage 3 will not make claims about:
+
+- diagnostic accuracy;
+- sensitivity or specificity;
+- treatment need;
+- suicide-risk assessment;
+- causal mechanisms;
+- longitudinal change;
+- clinical decision-making.
+
+### 12.18 Planned Stage 3 outputs
+
+Local processed objects will include:
+
+```text
+data/processed/phq9_stage3_split.rds
+data/processed/phq9_parallel_analysis_object.rds
+```
+
+These processed objects will remain excluded from the public repository unless a later data-publication decision is made.
+
+Planned public tables include:
+
+```text
+tables/phq9_stage3_split_summary.csv
+tables/phq9_parallel_analysis_results.csv
+tables/phq9_efa_loadings.csv
+tables/phq9_efa_factor_correlations.csv
+tables/phq9_efa_diagnostics.csv
+tables/phq9_stage3_model_decision.csv
+tables/phq9_cfa_fit_measures.csv
+tables/phq9_cfa_standardized_loadings.csv
+tables/phq9_cfa_thresholds.csv
+tables/phq9_cfa_residual_correlations.csv
+tables/phq9_cfa_computational_diagnostics.csv
+```
+
+Planned figures include:
+
+```text
+figures/phq9_parallel_analysis.png
+figures/phq9_efa_loadings.png
+figures/phq9_cfa_standardized_loadings.png
+```
+
+Only necessary, interpretable outputs will be included in the Quarto report.
+
+The session-information record will be updated after Stage 3 execution.
+
+### 12.19 Stage 3 execution order
+
+Stage 3 will proceed in the following order:
+
+1. commit analysis plan version 1.5;
+2. implement the fixed development and validation split;
+3. validate both split samples;
+4. estimate and validate the development polychoric matrix;
+5. run the locked ordinal parallel analysis;
+6. extract and validate the 95th-percentile comparison;
+7. fit the permitted development-sample EFA solutions;
+8. record the alternative-model freezing decision;
+9. access and fit the primary validation-sample one-factor CFA;
+10. fit one frozen secondary CFA only when permitted by the development-stage decision;
+11. extract global-fit, loading, threshold, residual and computational diagnostics;
+12. export tables and figures;
+13. update the Quarto report;
+14. complete Stage 3 methodological, academic-voice and repository review.
+
+No parallel analysis, EFA, CFA or model comparison will be run before analysis plan version 1.5 is committed.
+
+## 13. Later planned analyses
+
+### 13.1 Functional-difficulty association
+
+The relationship between PHQ-9 symptom severity and `DPQ100` will be examined after Stage 3 using:
 
 - weighted PHQ-9 estimates across functional-difficulty categories;
 - visualisation of the score–difficulty relationship;
@@ -351,7 +985,7 @@ If the proportional-odds assumption is not supported, a less restrictive survey-
 
 Results will be interpreted as evidence about the relationship between symptom scores and reported functional impairment, rather than evidence of diagnostic accuracy.
 
-### 12.3 Limitations and interpretation
+### 13.2 Limitations and interpretation
 
 The discussion will address:
 
@@ -366,7 +1000,7 @@ The discussion will address:
 - interpretation of PHQ-9 item 9;
 - the distinction between statistical associations and clinical decisions.
 
-## 13. Weighted analyses and psychometric modelling
+## 14. Weighted analyses and psychometric modelling
 
 ### Weighted analyses
 
@@ -382,9 +1016,9 @@ Weighted estimates describe the U.S. civilian non-institutionalised adult popula
 
 ### Psychometric analyses
 
-Reliability, polychoric correlations and factor analysis will use the complete-PHQ-9 analytic sample.
+Reliability, polychoric correlations and factor analyses use the complete-PHQ-9 analytic sample.
 
-Unless survey weights are incorporated into a specific psychometric model, resulting parameters will be described as estimates for the analytic sample rather than as nationally representative latent-variable parameters.
+Unless survey weights are incorporated into a specific psychometric model, resulting parameters will be described as estimates for the analytic sample rather than nationally representative latent-variable parameters.
 
 The report will distinguish:
 
@@ -393,7 +1027,7 @@ The report will distinguish:
 
 Survey-weighted latent-variable modelling is outside the version 1 scope.
 
-## 14. Clinical interpretation
+## 15. Clinical interpretation
 
 PHQ-9 scores will be interpreted as **self-reported indicators of recent depressive symptom severity**. They will not be presented as psychiatric diagnoses.
 
@@ -401,7 +1035,7 @@ The dataset does not establish whether a participant met diagnostic criteria for
 
 `DPQ090`, corresponding to PHQ-9 item 9, concerns thoughts of death or self-harm. Endorsement is clinically important, but item 9 is not a standalone suicide-risk assessment. It does not establish intent, planning, imminence or overall suicide risk.
 
-## 15. Version 1 completion criteria
+## 16. Version 1 completion criteria
 
 Version 1 will contain:
 
@@ -412,13 +1046,13 @@ Version 1 will contain:
 5. item floor-effect and category-sparsity assessment;
 6. corrected item-total correlations;
 7. ordinal coefficient alpha;
-8. McDonald’s omega;
+8. McDonald’s omega total;
 9. a polychoric correlation matrix;
-10. a one-factor dimensionality analysis;
+10. a development and validation dimensionality analysis centred on the prespecified one-factor ordinal CFA;
 11. an analysis of PHQ-9 scores in relation to functional difficulty;
 12. a discussion of interpretation and limitations.
 
-## 16. Not included in version 1
+## 17. Not included in version 1
 
 Version 1 will not include:
 
@@ -427,15 +1061,19 @@ Version 1 will not include:
 - claims about whether participants need treatment;
 - claims that PHQ-9 scores establish a depressive disorder;
 - measurement-invariance testing;
-- survey-weighted latent-variable modelling.
+- survey-weighted latent-variable modelling;
+- bifactor modelling;
+- post hoc item deletion;
+- post hoc correlated residuals;
+- unrestricted exploratory model searching;
+- separate analysis of the partial 2019–March 2020 cycle.
 
 These exclusions reflect the information available in the dataset and the defined scope of the project.
 
-## 17. Optional extensions
+## 18. Optional extensions
 
 Potential extensions after version 1 is complete include:
 
-- comparison of one-factor and theoretically justified two-factor models;
 - PHQ-8 sensitivity analysis excluding item 9;
 - subgroup descriptives;
 - measurement invariance across sex or broad age groups;
@@ -444,11 +1082,12 @@ Potential extensions after version 1 is complete include:
 - exploratory sleep-related analyses;
 - survey-weighted reliability estimates;
 - survey-weighted latent-variable modelling;
+- bifactor analysis only if later theoretically and methodologically justified;
 - replication using another NHANES cycle.
 
-Measurement invariance is an extension and is not required for version 1.
+Measurement invariance and bifactor modelling are extensions and are not required for version 1.
 
-## 18. Repository structure
+## 19. Repository structure
 
 ```text
 phq9-nhanes-psychometrics/
@@ -476,7 +1115,7 @@ phq9-nhanes-psychometrics/
 └── LICENSE
 ```
 
-## 19. Execution checklist
+## 20. Execution checklist
 
 ### Stage 1: data audit
 
@@ -526,18 +1165,29 @@ phq9-nhanes-psychometrics/
 
 ### Stage 3: dimensionality analysis
 
-- [ ] Lock the Stage 3 dimensionality analysis plan.
-- [ ] Create a fixed-seed development and validation split.
-- [ ] Conduct ordinal parallel analysis in the development sample.
-- [ ] Conduct limited exploratory factor analysis in the development sample.
+- [x] Lock the Stage 3 dimensionality-analysis specification before analysis.
+- [ ] Create the fixed-seed development and validation split.
+- [ ] Validate sample size, response coding and category availability in both split samples.
+- [ ] Estimate and validate the unsmoothed development-sample polychoric matrix.
+- [ ] Conduct the controlled single-core ordinal parallel analysis.
+- [ ] Reconstruct the resampled 95th-percentile factor-eigenvalue thresholds.
+- [ ] Check the custom leading-consecutive recommendation against `parallel_results$nfact`.
+- [ ] Conduct the permitted development-sample exploratory factor analyses.
+- [ ] Record and freeze at most one eligible alternative CFA before accessing validation results.
 - [ ] Fit the prespecified one-factor ordinal CFA in the validation sample.
-- [ ] Report standardised factor loadings.
-- [ ] Evaluate CFI, TLI, RMSEA and SRMR.
-- [ ] Document estimator, convergence and threshold diagnostics.
-- [ ] Examine local residuals without adding post hoc correlated residuals.
-- [ ] Consider an alternative factor model only if a clear, theoretically interpretable problem is identified.
+- [ ] Fit one frozen secondary multifactor CFA only when permitted by the development-stage decision.
+- [ ] Extract robust global-fit measures.
+- [ ] Report fully standardised factor loadings with 95% Wald-type confidence intervals.
+- [ ] Extract and validate item thresholds.
+- [ ] Document estimator, parameterisation, convergence and improper-solution diagnostics.
+- [ ] Examine residual correlations using the descriptive absolute `.10` flag.
+- [ ] Avoid post hoc correlated residuals and item deletion.
 - [ ] Export Stage 3 tables and figures.
+- [ ] Update the session-information record.
 - [ ] Update the Quarto report.
+- [ ] Complete the academic-voice, methodological-language and formatting check.
 - [ ] Complete Stage 3 review and validation.
 
-Stage 2A and Stage 2B review and validation are complete. Stage 3 has not begun and will start with a locked dimensionality analysis plan.
+Stage 2A and Stage 2B review and validation are complete.
+
+The Stage 3 dimensionality-analysis specification was locked before analysis on 23 July 2026. Stage 3 implementation has not begun.
